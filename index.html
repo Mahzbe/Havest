@@ -1,223 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Harvest Haven</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Life Simulation</title>
     <style>
-        /* Basic styling for the landscape */
-        #landscape {
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #game-area {
             width: 800px;
             height: 600px;
-            background-color: #87CEEB; /* Sky blue */
+            background-color: #87CEEB; /* Sky */
             position: relative;
+            overflow: hidden;
             margin: 0 auto;
         }
-
-        /* Styling for farm, shop, and house */
-        #farm, #shop, #house {
-            width: 100px;
-            height: 100px;
+        .background {
+            width: 1600px; /* 2x the width of the game area */
+            height: 600px;
             position: absolute;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            background-image: linear-gradient(to right, #87CEEB, #228B22); /* Sky to Grass */
+            transition: left 1s ease;
         }
-
-        #farm {
-            background-color: #32CD32; /* Lime green */
-            top: 200px;
-            left: 100px;
-        }
-
-        #shop {
-            background-color: #6495ED; /* Cornflower blue */
-            top: 200px;
-            left: 600px;
-        }
-
-        #house {
-            background-color: #FFD700; /* Gold */
-            top: 400px;
-            left: 350px;
-        }
-
-        /* Styling for NPCs and player */
-        .character {
+        #player, .npc {
             width: 50px;
             height: 50px;
-            position: absolute;
             border-radius: 50%;
-        }
-
-        /* Names for characters */
-        .name-tag {
             position: absolute;
-            width: 100%;
+            background-color: yellow;
             text-align: center;
-            color: black;
+            line-height: 50px;
+            font-size: 10px;
             font-weight: bold;
-            font-size: 14px;
-            top: -20px;
         }
-
-        #npc1 {
-            background-color: #FF0000; /* Red */
-            top: 300px;
-            left: 150px;
+        .npc {
+            background-color: red;
         }
-
-        #npc2 {
-            background-color: #FF6347; /* Tomato */
-            top: 300px;
-            left: 550px;
-        }
-
         #player {
-            background-color: #FFFF00; /* Yellow */
-            top: 100px;
-            left: 400px;
+            left: 50px;
+            top: 300px;
         }
-
-        /* Joystick container and buttons */
+        #net-worth, #bank-balance {
+            margin: 20px;
+        }
         #joystick {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            background: #ccc;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 20px;
         }
-
-        .control-btn {
-            width: 50px;
-            height: 50px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            margin: 5px;
-            font-size: 18px;
-            text-align: center;
-            line-height: 50px;
-            cursor: pointer;
+        #joystick-controls {
+            width: 100px;
+            height: 100px;
+            background: #666;
+            border-radius: 50%;
+            position: relative;
         }
-
-        /* Menu styles */
-        #menu {
-            margin: 10px;
-            text-align: center;
+        .joystick-button {
+            width: 30px;
+            height: 30px;
+            background: #444;
+            position: absolute;
+            border-radius: 50%;
         }
-
-        #menu button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-        }
+        .up { top: -40px; left: 35px; }
+        .down { bottom: -40px; left: 35px; }
+        .left { left: -40px; top: 35px; }
+        .right { right: -40px; top: 35px; }
     </style>
 </head>
 <body>
-    <div id="menu">
-        <button id="start-game">Start Game</button>
-        <button id="view-instructions">Instructions</button>
-        <button id="exit-game">Exit Game</button>
+
+<div id="game-area">
+    <div class="background" id="background"></div>
+    <div id="player">Player</div>
+    <div class="npc" id="npc1" style="left: 300px; top: 200px;">NPC</div>
+    <div class="npc" id="npc2" style="left: 600px; top: 400px;">NPC</div>
+</div>
+
+<div id="net-worth">Net Worth: $1000</div>
+<div id="bank-balance">Bank Balance: $500</div>
+
+<div id="joystick">
+    <div id="joystick-controls">
+        <div class="joystick-button up"></div>
+        <div class="joystick-button down"></div>
+        <div class="joystick-button left"></div>
+        <div class="joystick-button right"></div>
     </div>
+</div>
 
-    <div id="landscape">
-        <div id="farm"></div>
-        <div id="shop"></div>
-        <div id="house"></div>
-        
-        <!-- NPC1 with name -->
-        <div id="npc1" class="character">
-            <div class="name-tag">NPC1</div>
-        </div>
-        
-        <!-- NPC2 with name -->
-        <div id="npc2" class="character">
-            <div class="name-tag">NPC2</div>
-        </div>
-        
-        <!-- Player with name -->
-        <div id="player" class="character">
-            <div class="name-tag">Player</div>
-        </div>
-    </div>
+<script>
+    let netWorth = 1000;
+    let bankBalance = 500;
+    let player = document.getElementById('player');
+    let background = document.getElementById('background');
+    let npc1 = document.getElementById('npc1');
+    let npc2 = document.getElementById('npc2');
 
-    <!-- Joystick controls -->
-    <div id="joystick">
-        <button class="control-btn" id="left">←</button>
-        <div>
-            <button class="control-btn" id="up">↑</button>
-            <button class="control-btn" id="down">↓</button>
-        </div>
-        <button class="control-btn" id="right">→</button>
-    </div>
+    let contractActive = false;
+    let contractEndTime = null;
 
-    <script>
-        const player = document.getElementById('player');
-        const npc1 = document.getElementById('npc1');
-        const npc2 = document.getElementById('npc2');
+    function updateFinances() {
+        document.getElementById('net-worth').innerText = `Net Worth: $${netWorth}`;
+        document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
+    }
 
-        // Random movement for NPCs
-        function moveNPC(npc) {
-            const directions = ['left', 'right', 'up', 'down'];
-            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    function startWorkContract() {
+        contractActive = true;
+        contractEndTime = Date.now() + 60000; // 1 minute contract
+        background.style.left = "-800px"; // Slide to work background
+    }
 
-            switch(randomDirection) {
-                case 'left':
-                    npc.style.left = `${parseInt(npc.style.left) - 10}px`;
-                    break;
-                case 'right':
-                    npc.style.left = `${parseInt(npc.style.left) + 10}px`;
-                    break;
-                case 'up':
-                    npc.style.top = `${parseInt(npc.style.top) - 10}px`;
-                    break;
-                case 'down':
-                    npc.style.top = `${parseInt(npc.style.top) + 10}px`;
-                    break;
-            }
+    function endWorkContract() {
+        contractActive = false;
+        bankBalance += 100; // Earn money from contract
+        netWorth += 100;
+        background.style.left = "0"; // Slide back to home background
+        alert("Contract ended. Look for a new job.");
+    }
+
+    setInterval(() => {
+        if (contractActive && Date.now() >= contractEndTime) {
+            endWorkContract();
         }
+    }, 1000);
 
-        // Control the player's movement
-        document.getElementById('left').addEventListener('click', () => {
-            player.style.left = `${parseInt(player.style.left) - 10}px`;
-        });
+    function movePlayer(direction) {
+        const moveBy = 10;
+        const playerRect = player.getBoundingClientRect();
+        const gameAreaRect = document.getElementById('game-area').getBoundingClientRect();
 
-        document.getElementById('right').addEventListener('click', () => {
-            player.style.left = `${parseInt(player.style.left) + 10}px`;
-        });
-
-        document.getElementById('up').addEventListener('click', () => {
-            player.style.top = `${parseInt(player.style.top) - 10}px`;
-        });
-
-        document.getElementById('down').addEventListener('click', () => {
-            player.style.top = `${parseInt(player.style.top) + 10}px`;
-        });
-
-        setInterval(() => {
-            moveNPC(npc1);
-            moveNPC(npc2);
-        }, 1000);
-
-        // Interaction logic
-        function checkInteraction() {
-            const playerRect = player.getBoundingClientRect();
-            const npc1Rect = npc1.getBoundingClientRect();
-            const npc2Rect = npc2.getBoundingClientRect();
-
-            if (playerRect.left < npc1Rect.right && playerRect.right > npc1Rect.left &&
-                playerRect.top < npc1Rect.bottom && playerRect.bottom > npc1Rect.top) {
-                alert("Player is interacting with NPC1");
-            }
-
-            if (playerRect.left < npc2Rect.right && playerRect.right > npc2Rect.left &&
-                playerRect.top < npc2Rect.bottom && playerRect.bottom > npc2Rect.top) {
-                alert("Player is interacting with NPC2");
-            }
+        if (direction === 'up' && playerRect.top > gameAreaRect.top) {
+            player.style.top = `${player.offsetTop - moveBy}px`;
+        } else if (direction === 'down' && playerRect.bottom < gameAreaRect.bottom) {
+            player.style.top = `${player.offsetTop + moveBy}px`;
+        } else if (direction === 'left' && playerRect.left > gameAreaRect.left) {
+            player.style.left = `${player.offsetLeft - moveBy}px`;
+        } else if (direction === 'right' && playerRect.right < gameAreaRect.right) {
+            player.style.left = `${player.offsetLeft + moveBy}px`;
         }
+    }
 
-        // Check for interactions after each move
+    function npcPopups() {
+        // NPC1 moves every 5 minutes
         setInterval(() => {
-            checkInteraction();
-        }, 100);
-    </script>
+            let newLeft = Math.random() * (gameAreaRect.width - 50);
+            let newTop = Math.random() * (gameAreaRect.height - 50);
+            npc1.style.left = `${newLeft}px`;
+            npc1.style.top = `${newTop}px`;
+        }, 300000);
+
+        // NPC2 moves every 5 minutes
+        setInterval(() => {
+            let newLeft = Math.random() * (gameAreaRect.width - 50);
+            let newTop = Math.random() * (gameAreaRect.height - 50);
+            npc2.style.left = `${newLeft}px`;
+            npc2.style.top = `${newTop}px`;
+        }, 300000);
+    }
+
+    document.querySelector('.up').addEventListener('click', () => movePlayer('up'));
+    document.querySelector('.down').addEventListener('click', () => movePlayer('down'));
+    document.querySelector('.left').addEventListener('click', () => movePlayer('left'));
+    document.querySelector('.right').addEventListener('click', () => movePlayer('right'));
+
+    updateFinances();
+    npcPopups();
+
+    document.querySelector('#joystick').addEventListener('click', () => {
+        if (!contractActive) {
+            startWorkContract();
+        }
+    });
+</script>
+
 </body>
 </html>
