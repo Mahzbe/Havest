@@ -3,82 +3,75 @@
 <head>
 	<title>Harvest Haven</title>
 	<style>
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #f0f0f0;
-		}
-		
-		#game-container {
+		/* Add some basic styling for the landscape */
+		#landscape {
 			width: 800px;
-			margin: 40px auto;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			height: 600px;
+			background-color: #87CEEB; /* Sky blue */
+			position: relative;
 		}
 		
-		#game-info {
-			margin-bottom: 20px;
+		#farm {
+			width: 100px;
+			height: 100px;
+			background-color: #32CD32; /* Lime green */
+			position: absolute;
+			top: 200px;
+			left: 200px;
 		}
 		
-		#npc-locations {
-			margin-bottom: 20px;
+		#shop {
+			width: 100px;
+			height: 100px;
+			background-color: #6495ED; /* Cornflower blue */
+			position: absolute;
+			top: 300px;
+			left: 400px;
 		}
 		
-		#player-input {
-			width: 100%;
-			height: 30px;
-			padding: 10px;
-			margin-bottom: 10px;
-		}
-		
-		#submit-btn {
-			background-color: #4CAF50;
-			color: #fff;
-			padding: 10px 20px;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-		}
-		
-		#game-output {
-			margin-top: 20px;
+		#npc {
+			width: 50px;
+			height: 50px;
+			background-color: #FF0000; /* Red */
+			position: absolute;
+			top: 250px;
+			left: 250px;
 		}
 	</style>
 </head>
 <body>
-	<div id="game-container">
-		<div id="game-info">
-			<p>Day: <span id="day">1</span></p>
-			<p>Money: <span id="money">100</span></p>
-			<p>Farm Level: <span id="farm-level">1</span></p>
-			<p>Shop Level: <span id="shop-level">1</span></p>
-		</div>
-		<div id="npc-locations">
-			<!-- NPC locations will be displayed here -->
-		</div>
-		<input id="player-input" type="text">
-		<button id="submit-btn">Submit</button>
-		<div id="game-output">
-			<!-- Game output will be displayed here -->
-		</div>
+	<div id="landscape">
+		<div id="farm"></div>
+		<div id="shop"></div>
+		<div id="npc"></div>
 	</div>
+	<div id="game-info">
+		<p>Day: <span id="day">1</span></p>
+		<p>Money: <span id="money">100</span></p>
+		<p>Farm Level: <span id="farm-level">1</span></p>
+		<p>Shop Level: <span id="shop-level">1</span></p>
+	</div>
+	<input id="player-input" type="text" placeholder="Enter command (e.g., 'talk to npc', 'work on farm', etc.)">
+	<button id="submit-btn">Submit</button>
+	<div id="game-output"></div>
 	
 	<script>
 		// Get game elements
-		const gameContainer = document.getElementById('game-container');
 		const gameInfo = document.getElementById('game-info');
-		const npcLocations = document.getElementById('npc-locations');
 		const playerInput = document.getElementById('player-input');
 		const submitBtn = document.getElementById('submit-btn');
 		const gameOutput = document.getElementById('game-output');
+		const landscape = document.getElementById('landscape');
+		const farm = document.getElementById('farm');
+		const shop = document.getElementById('shop');
+		const npc = document.getElementById('npc');
 		
 		// Initialize game state
 		let day = 1;
 		let money = 100;
 		let farmLevel = 1;
 		let shopLevel = 1;
+		let npcLocation = 'farm';
 		
 		// Define NPCs
 		const npcs = [
@@ -107,32 +100,28 @@
 			const playerInputValue = playerInput.value.trim();
 			if (playerInputValue) {
 				// Handle player input logic here
-				const npcResponse = getNPCResponse(playerInputValue);
-				gameOutput.innerHTML += `<p>${npcResponse}</p>`;
+				if (playerInputValue === 'talk to npc') {
+					const npcResponse = getNPCResponse();
+					gameOutput.innerHTML += `<p>${npcResponse}</p>`;
+				} else if (playerInputValue === 'work on farm') {
+					handleFarming();
+				} else if (playerInputValue === 'shop') {
+					handleShopping();
+				} else if (playerInputValue === 'upgrade farm') {
+					handleUpgradeFarm();
+				} else if (playerInputValue === 'upgrade shop') {
+					handleUpgradeShop();
+				}
 				playerInput.value = '';
 			}
 		});
 		
 		// Get NPC response
-		function getNPCResponse(playerInput) {
+		function getNPCResponse() {
 			// Simple response logic for now
-			const npc = npcs[Math.floor(Math.random() * npcs.length)];
+			const npc = npcs.find(npc => npc.location === npcLocation);
 			return `${npc.name}: ${npc.responses[Math.floor(Math.random() * npc.responses.length)]}`;
 		}
-		
-		// Update game state
-		setInterval(() => {
-			day++;
-			money += 10;
-			farmLevel += 0.1;
-			shopLevel += 0.1;
-			gameInfo.innerHTML = `
-				<p>Day: <span id="day">${day}</span></p>
-				<p>Money: <span id="money">${money}</span></p>
-				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(1)}</span></p>
-				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(1)}</span></p>
-			`;
-		}, 1000);
 		
 		// Handle farming
 		function handleFarming() {
@@ -170,25 +159,29 @@
 			}
 		}
 		
-		// Handle player input
-		submitBtn.addEventListener('click', () => {
-			const playerInputValue = playerInput.value.trim();
-			if (playerInputValue) {
-				if (playerInputValue === 'farm') {
-					handleFarming();
-				} else if (playerInputValue === 'shop') {
-					handleShopping();
-				} else if (playerInputValue === 'upgrade farm') {
-					handleUpgradeFarm();
-				} else if (playerInputValue === 'upgrade shop') {
-					handleUpgradeShop();
-				} else {
-					const npcResponse = getNPCResponse(playerInputValue);
-					gameOutput.innerHTML += `<p>${npcResponse}</p>`;
-				}
-				playerInput.value = '';
+		// Move NPC
+		setInterval(() => {
+			if (npcLocation === 'farm') {
+				npcLocation = 'shop';
+				npc.style.top = '300px';
+				npc.style.left = '400px';
+			} else {
+				npcLocation = 'farm';
+				npc.style.top = '200px';
+				npc.style.left = '200px';
 			}
-		});
+		}, 5000);
+		
+		// Update game state
+		setInterval(() => {
+			day++;
+			gameInfo.innerHTML = `
+				<p>Day: <span id="day">${day}</span></p>
+				<p>Money: <span id="money">${money}</span></p>
+				<p>Farm Level: <span id="farm-level">${farmLevel}</span></p>
+				<p>Shop Level: <span id="shop-level">${shopLevel}</span></p>
+			`;
+		}, 1000);
 	</script>
 </body>
 </html>
