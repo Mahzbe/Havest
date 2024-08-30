@@ -149,16 +149,16 @@
 		
 		// Handle farming
 		function handleFarming() {
-			money += 20;
-			farmLevel += 1;
-			gameOutput.innerHTML += `<p>You worked on your farm and earned $20.</p>`;
+			money += 1;
+			farmLevel += 0.1;
+			gameOutput.innerHTML += `<p>You worked on your farm and earned $1.</p>`;
 		}
 		
 		// Handle shopping
 		function handleShopping() {
-			money -= 10;
-			shopLevel += 1;
-			gameOutput.innerHTML += `<p>You bought some supplies for $10.</p>`;
+			money -= 0.5;
+			shopLevel += 0.1;
+			gameOutput.innerHTML += `<p>You bought some supplies for $0.50.</p>`;
 		}
 		
 		// Handle upgrading farm
@@ -196,14 +196,31 @@
 			}
 		}, 5000);
 		
+		// Add NPC controls
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'ArrowUp') {
+				npc.style.top = `${parseInt(npc.style.top) - 10}px`;
+			}
+			if (event.key === 'ArrowDown') {
+				npc.style.top = `${parseInt(npc.style.top) + 10}px`;
+			}
+			if (event.key === 'ArrowLeft') {
+				npc.style.left = `${parseInt(npc.style.left) - 10}px`;
+			}
+			if (event.key === 'ArrowRight') {
+				npc.style.left = `${parseInt(npc.style.left) + 10}px`;
+			}
+		});
+		
 		// Update game state
 		setInterval(() => {
-			day++;
+			day += 0.01;
+			money += 0.1;
 			gameInfo.innerHTML = `
-				<p>Day: <span id="day">${day}</span></p>
-				<p>Money: <span id="money">${money}</span></p>
-				<p>Farm Level: <span id="farm-level">${farmLevel}</span></p>
-				<p>Shop Level: <span id="shop-level">${shopLevel}</span></p>
+				<p>Day: <span id="day">${day.toFixed(2)}</span></p>
+				<p>Money: <span id="money">${money.toFixed(2)}</span></p>
+				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(2)}</span></p>
+				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(2)}</span></p>
 			`;
 		}, 1000);
 	</script>
