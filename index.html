@@ -11,7 +11,7 @@
             border: 2px solid black;
         }
         
-        #house, #farm, #npc, #player {
+        #house, #farm, #npc, #player, #npc2 {
             width: 50px;
             height: 50px;
             position: absolute;
@@ -36,6 +36,12 @@
             left: 400px;
         }
         
+        #npc2 {
+            background-color: #00FF00; /* Green */
+            top: 100px;
+            left: 600px;
+        }
+        
         #player {
             background-color: #FFFF00; /* Yellow */
             top: 300px;
@@ -56,6 +62,7 @@
         <div id="house"></div>
         <div id="farm"></div>
         <div id="npc"></div>
+        <div id="npc2"></div>
         <div id="player"></div>
     </div>
     <button id="menu-btn">Menu</button>
@@ -68,6 +75,7 @@
     <script>
         const player = document.getElementById('player');
         const npc = document.getElementById('npc');
+        const npc2 = document.getElementById('npc2');
         const menuBtn = document.getElementById('menu-btn');
         const menu = document.getElementById('menu');
 
@@ -78,6 +86,9 @@
         let npcX = 400;
         let npcY = 200;
 
+        let npc2X = 600;
+        let npc2Y = 100;
+
         // Update positions
         function updatePositions() {
             player.style.left = playerX + 'px';
@@ -85,6 +96,9 @@
 
             npc.style.left = npcX + 'px';
             npc.style.top = npcY + 'px';
+
+            npc2.style.left = npc2X + 'px';
+            npc2.style.top = npc2Y + 'px';
         }
 
         // Initialize positions
@@ -110,7 +124,7 @@
         });
 
         // NPC random movement
-        setInterval(() => {
+        function moveNPC(npcX, npcY) {
             const directions = ['up', 'down', 'left', 'right'];
             const direction = directions[Math.floor(Math.random() * directions.length)];
             switch (direction) {
@@ -127,6 +141,19 @@
                     if (npcX < 750) npcX += 10;
                     break;
             }
+            return { x: npcX, y: npcY };
+        }
+
+        // Move both NPCs every second
+        setInterval(() => {
+            let npcPosition = moveNPC(npcX, npcY);
+            npcX = npcPosition.x;
+            npcY = npcPosition.y;
+
+            let npc2Position = moveNPC(npc2X, npc2Y);
+            npc2X = npc2Position.x;
+            npc2Y = npc2Position.y;
+
             updatePositions();
         }, 1000);
 
