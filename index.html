@@ -18,6 +18,7 @@
 			position: absolute;
 			top: 200px;
 			left: 200px;
+			border-radius: 50%;
 		}
 		
 		#shop {
@@ -27,6 +28,7 @@
 			position: absolute;
 			top: 300px;
 			left: 400px;
+			border-radius: 50%;
 		}
 		
 		#npc {
@@ -36,6 +38,17 @@
 			position: absolute;
 			top: 250px;
 			left: 250px;
+			border-radius: 50%;
+		}
+		
+		#player {
+			width: 50px;
+			height: 50px;
+			background-color: #FFFF00; /* Yellow */
+			position: absolute;
+			top: 100px;
+			left: 100px;
+			border-radius: 50%;
 		}
 	</style>
 </head>
@@ -44,6 +57,7 @@
 		<div id="farm"></div>
 		<div id="shop"></div>
 		<div id="npc"></div>
+		<div id="player"></div>
 	</div>
 	<div id="game-info">
 		<p>Day: <span id="day">1</span></p>
@@ -51,7 +65,7 @@
 		<p>Farm Level: <span id="farm-level">1</span></p>
 		<p>Shop Level: <span id="shop-level">1</span></p>
 	</div>
-	<input id="player-input" type="text" placeholder="Enter command (e.g., 'talk to npc', 'work on farm', etc.)">
+	<input id="player-input" type="text" placeholder="Enter command (e.g., 'move to farm', 'talk to npc', etc.)">
 	<button id="submit-btn">Submit</button>
 	<div id="game-output"></div>
 	
@@ -65,6 +79,7 @@
 		const farm = document.getElementById('farm');
 		const shop = document.getElementById('shop');
 		const npc = document.getElementById('npc');
+		const player = document.getElementById('player');
 		
 		// Initialize game state
 		let day = 1;
@@ -72,6 +87,7 @@
 		let farmLevel = 1;
 		let shopLevel = 1;
 		let npcLocation = 'farm';
+		let playerLocation = 'start';
 		
 		// Define NPCs
 		const npcs = [
@@ -100,7 +116,15 @@
 			const playerInputValue = playerInput.value.trim();
 			if (playerInputValue) {
 				// Handle player input logic here
-				if (playerInputValue === 'talk to npc') {
+				if (playerInputValue === 'move to farm') {
+					playerLocation = 'farm';
+					player.style.top = '200px';
+					player.style.left = '200px';
+				} else if (playerInputValue === 'move to shop') {
+					playerLocation = 'shop';
+					player.style.top = '300px';
+					player.style.left = '400px';
+				} else if (playerInputValue === 'talk to npc') {
 					const npcResponse = getNPCResponse();
 					gameOutput.innerHTML += `<p>${npcResponse}</p>`;
 				} else if (playerInputValue === 'work on farm') {
