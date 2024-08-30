@@ -1,189 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farm Life Simulation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #game-area {
-            width: 800px;
-            height: 600px;
-            background-color: #87CEEB; /* Sky */
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-        .background {
-            width: 1600px; /* 2x the width of the game area */
-            height: 600px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-image: linear-gradient(to right, #87CEEB, #228B22); /* Sky to Grass */
-            transition: left 1s ease;
-        }
-        #player, .npc {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            position: absolute;
-            background-color: yellow;
-            text-align: center;
-            line-height: 50px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        .npc {
-            background-color: red;
-        }
-        #player {
-            left: 50px;
-            top: 300px;
-        }
-        #net-worth, #bank-balance {
-            margin: 20px;
-        }
-        #joystick {
-            width: 200px;
-            height: 200px;
-            position: absolute;
-            left: 50%;
-            bottom: 20px;
-            transform: translateX(-50%);
-            background: #ccc;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #joystick-controls {
-            width: 100px;
-            height: 100px;
-            background: #666;
-            border-radius: 50%;
-            position: relative;
-        }
-        .joystick-button {
-            width: 30px;
-            height: 30px;
-            background: #444;
-            position: absolute;
-            border-radius: 50%;
-        }
-        .up { top: -40px; left: 35px; }
-        .down { bottom: -40px; left: 35px; }
-        .left { left: -40px; top: 35px; }
-        .right { right: -40px; top: 35px; }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Harvest Haven</title>
+	<style>
+		/* Add some basic styling for the landscape */
+		#game-area {
+			width: 800px;
+			height: 600px;
+			background-color: #87CEEB; /* Sky blue */
+			position: relative;
+			overflow: hidden;
+			margin: 0 auto;
+		}
+		
+		/* Style the UI elements */
+		.ui {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+		}
+		
+		.button {
+			width: 150px;
+			height: 50px;
+			background-color: #228B22; /* Green */
+			color: #fff;
+			border: none;
+			border-radius: 10px;
+			cursor: pointer;
+			margin: 10px;
+		}
+		
+		.button:hover {
+			background-color: #32CD32; /* Light green */
+		}
+		
+		/* Player character styles */
+		#player {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background-color: #FFA07A; /* Orange */
+			position: absolute;
+			top: 275px;
+			left: 375px;
+		}
+	</style>
 </head>
 <body>
-
-<div id="game-area">
-    <div class="background" id="background"></div>
-    <div id="player">Player</div>
-    <div class="npc" id="npc1" style="left: 300px; top: 200px;">NPC</div>
-    <div class="npc" id="npc2" style="left: 600px; top: 400px;">NPC</div>
-</div>
-
-<div id="net-worth">Net Worth: $1000</div>
-<div id="bank-balance">Bank Balance: $500</div>
-
-<div id="joystick">
-    <div id="joystick-controls">
-        <div class="joystick-button up"></div>
-        <div class="joystick-button down"></div>
-        <div class="joystick-button left"></div>
-        <div class="joystick-button right"></div>
-    </div>
-</div>
-
-<script>
-    let netWorth = 1000;
-    let bankBalance = 500;
-    let player = document.getElementById('player');
-    let background = document.getElementById('background');
-    let npc1 = document.getElementById('npc1');
-    let npc2 = document.getElementById('npc2');
-
-    let contractActive = false;
-    let contractEndTime = null;
-
-    function updateFinances() {
-        document.getElementById('net-worth').innerText = `Net Worth: $${netWorth}`;
-        document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-    }
-
-    function startWorkContract() {
-        contractActive = true;
-        contractEndTime = Date.now() + 60000; // 1 minute contract
-        background.style.left = "-800px"; // Slide to work background
-    }
-
-    function endWorkContract() {
-        contractActive = false;
-        bankBalance += 100; // Earn money from contract
-        netWorth += 100;
-        background.style.left = "0"; // Slide back to home background
-        alert("Contract ended. Look for a new job.");
-    }
-
-    setInterval(() => {
-        if (contractActive && Date.now() >= contractEndTime) {
-            endWorkContract();
-        }
-    }, 1000);
-
-    function movePlayer(direction) {
-        const moveBy = 10;
-        const playerRect = player.getBoundingClientRect();
-        const gameAreaRect = document.getElementById('game-area').getBoundingClientRect();
-
-        if (direction === 'up' && playerRect.top > gameAreaRect.top) {
-            player.style.top = `${player.offsetTop - moveBy}px`;
-        } else if (direction === 'down' && playerRect.bottom < gameAreaRect.bottom) {
-            player.style.top = `${player.offsetTop + moveBy}px`;
-        } else if (direction === 'left' && playerRect.left > gameAreaRect.left) {
-            player.style.left = `${player.offsetLeft - moveBy}px`;
-        } else if (direction === 'right' && playerRect.right < gameAreaRect.right) {
-            player.style.left = `${player.offsetLeft + moveBy}px`;
-        }
-    }
-
-    function npcPopups() {
-        // NPC1 moves every 5 minutes
-        setInterval(() => {
-            let newLeft = Math.random() * (gameAreaRect.width - 50);
-            let newTop = Math.random() * (gameAreaRect.height - 50);
-            npc1.style.left = `${newLeft}px`;
-            npc1.style.top = `${newTop}px`;
-        }, 300000);
-
-        // NPC2 moves every 5 minutes
-        setInterval(() => {
-            let newLeft = Math.random() * (gameAreaRect.width - 50);
-            let newTop = Math.random() * (gameAreaRect.height - 50);
-            npc2.style.left = `${newLeft}px`;
-            npc2.style.top = `${newTop}px`;
-        }, 300000);
-    }
-
-    document.querySelector('.up').addEventListener('click', () => movePlayer('up'));
-    document.querySelector('.down').addEventListener('click', () => movePlayer('down'));
-    document.querySelector('.left').addEventListener('click', () => movePlayer('left'));
-    document.querySelector('.right').addEventListener('click', () => movePlayer('right'));
-
-    updateFinances();
-    npcPopups();
-
-    document.querySelector('#joystick').addEventListener('click', () => {
-        if (!contractActive) {
-            startWorkContract();
-        }
-    });
-</script>
-
+	<div id="game-area">
+		<!-- UI elements -->
+		<div class="ui">
+			<h2>Harvest Haven</h2>
+			<p>Net Worth: $1000</p>
+			<p>Bank Balance: $500</p>
+			<button class="button" onclick="findJob()">Find Job</button>
+			<button class="button" onclick="goPub()">Go to Pub</button>
+		</div>
+		
+		<!-- Player character -->
+		<div id="player">Player</div>
+	</div>
+	
+	<script>
+		// Find a job
+		function findJob() {
+			alert('You started looking for a job.');
+			// Add job finding logic here
+		}
+		
+		// Go to pub
+		function goPub() {
+			alert('You are now at the pub.');
+			// Add pub logic here
+		}
+		
+		// Add a timer to trigger NPC interactions when unemployed
+		setInterval(function() {
+			if (/* player is unemployed */) {
+				// Trigger NPC interaction
+				alert('An NPC has approached you with a job offer!');
+			}
+		}, 600000); // 10 minutes in real-time
+	</script>
 </body>
 </html>
