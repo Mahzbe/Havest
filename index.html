@@ -62,6 +62,7 @@
 			<p>Bank Balance: $500</p>
 			<button class="button" onclick="findJob()">Find Job</button>
 			<button class="button" onclick="goPub()">Go to Pub</button>
+			<button class="button" onclick="work()">Work</button>
 		</div>
 		
 		<!-- Player character -->
@@ -69,25 +70,30 @@
 	</div>
 	
 	<script>
+		let job = null;
+		
 		// Find a job
 		function findJob() {
 			alert('You started looking for a job.');
-			// Add job finding logic here
+			job = 'Farmer'; // Assign a job
+			alert(`You got a job as a ${job}!`);
 		}
 		
 		// Go to pub
 		function goPub() {
 			alert('You are now at the pub.');
-			// Add pub logic here
 		}
 		
-		// Add a timer to trigger NPC interactions when unemployed
-		setInterval(function() {
-			if (/* player is unemployed */) {
-				// Trigger NPC interaction
-				alert('An NPC has approached you with a job offer!');
+		// Work
+		function work() {
+			if (job) {
+				alert(`You worked as a ${job} and earned $100.`);
+				// Update bank balance
+				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $600`;
+			} else {
+				alert('You need to find a job first!');
 			}
-		}, 600000); // 10 minutes in real-time
+		}
 	</script>
 </body>
 </html>
