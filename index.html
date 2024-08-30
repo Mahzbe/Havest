@@ -6,156 +6,113 @@
 		#landscape {
 			width: 800px;
 			height: 600px;
-			background-color: #87CEEB; /* Sky blue */
+			background-color: #87CEEB;
 			position: relative;
-			overflow: hidden;
 		}
-		#farm, #house, #npc, #player {
-			width: 80px;
-			height: 80px;
+		
+		#house, #farm, #npc, #player {
+			width: 50px;
+			height: 50px;
 			position: absolute;
-			border-radius: 10px;
+			border-radius: 10%;
 		}
+		
+		#house {
+			background-color: #8B4513; /* Brown */
+			top: 100px;
+			left: 50px;
+		}
+		
 		#farm {
 			background-color: #32CD32; /* Lime green */
 			top: 400px;
-			left: 100px;
-		}
-		#house {
-			background-color: #FFD700; /* Gold */
-			top: 100px;
-			left: 100px;
-		}
-		#npc {
-			background-color: #FF4500; /* Orange red */
-			top: 250px;
-			left: 400px;
-		}
-		#player {
-			background-color: #00FFFF; /* Aqua */
-			top: 300px;
 			left: 300px;
 		}
-		#menu {
-			position: absolute;
-			bottom: 10px;
-			left: 10px;
+		
+		#npc {
+			background-color: #FF0000; /* Red */
+			top: 200px;
+			left: 400px;
+		}
+		
+		#player {
+			background-color: #FFFF00; /* Yellow */
+			top: 300px;
+			left: 100px;
 		}
 	</style>
 </head>
 <body>
 	<div id="landscape">
-		<div id="farm"></div>
 		<div id="house"></div>
+		<div id="farm"></div>
 		<div id="npc"></div>
 		<div id="player"></div>
 	</div>
-	<div id="menu">
-		<button id="get-job-btn">Get Job at Farm</button>
-		<button id="move-home-btn">Move to House</button>
-		<button id="talk-npc-btn">Talk to NPC</button>
-		<button id="exit-btn">Exit Game</button>
+	<button id="menu-btn">Menu</button>
+	<div id="menu" style="display: none;">
+		<p>1. Get a job on the farm</p>
+		<p>2. Talk to NPC</p>
+		<p>3. Go to your house</p>
 	</div>
-	<div id="game-output"></div>
-
+	
 	<script>
-		// Get elements
 		const player = document.getElementById('player');
 		const npc = document.getElementById('npc');
-		const farm = document.getElementById('farm');
-		const house = document.getElementById('house');
-		const gameOutput = document.getElementById('game-output');
+		const menuBtn = document.getElementById('menu-btn');
+		const menu = document.getElementById('menu');
 
-		// Initialize player position
-		let playerX = 300;
+		let playerX = 100;
 		let playerY = 300;
 
-		// Initialize NPC movement
-		let npcX = 400;
-		let npcY = 250;
-
-		// Move player with arrow keys
-		document.addEventListener('keydown', function(event) {
-			switch(event.key) {
+		// Player movement controls using arrow keys
+		document.addEventListener('keydown', (event) => {
+			switch (event.key) {
 				case 'ArrowUp':
-					playerY -= 10;
+					if (playerY > 0) playerY -= 10;
 					break;
 				case 'ArrowDown':
-					playerY += 10;
+					if (playerY < 550) playerY += 10;
 					break;
 				case 'ArrowLeft':
-					playerX -= 10;
+					if (playerX > 0) playerX -= 10;
 					break;
 				case 'ArrowRight':
-					playerX += 10;
+					if (playerX < 750) playerX += 10;
 					break;
 			}
-			player.style.top = `${playerY}px`;
-			player.style.left = `${playerX}px`;
-			checkCollision();
+			player.style.top = playerY + 'px';
+			player.style.left = playerX + 'px';
 		});
 
-		// Move NPC randomly
+		// NPC random movement
 		setInterval(() => {
-			npcX += Math.floor(Math.random() * 20 - 10);
-			npcY += Math.floor(Math.random() * 20 - 10);
-			npc.style.top = `${npcY}px`;
-			npc.style.left = `${npcX}px`;
+			let npcX = parseInt(npc.style.left);
+			let npcY = parseInt(npc.style.top);
+			
+			let direction = Math.floor(Math.random() * 4);
+			switch (direction) {
+				case 0: // move up
+					if (npcY > 0) npcY -= 10;
+					break;
+				case 1: // move down
+					if (npcY < 550) npcY += 10;
+					break;
+				case 2: // move left
+					if (npcX > 0) npcX -= 10;
+					break;
+				case 3: // move right
+					if (npcX < 750) npcX += 10;
+					break;
+			}
+			npc.style.top = npcY + 'px';
+			npc.style.left = npcX + 'px';
 		}, 1000);
 
-		// Menu button actions
-		document.getElementById('get-job-btn').addEventListener('click', () => {
-			if (isNear(player, farm)) {
-				gameOutput.innerHTML = '<p>You got a job at the farm!</p>';
-			} else {
-				gameOutput.innerHTML = '<p>Move closer to the farm to get a job.</p>';
-			}
+		// Toggle menu display
+		menuBtn.addEventListener('click', () => {
+			menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
 		});
-
-		document.getElementById('move-home-btn').addEventListener('click', () => {
-			playerX = 100;
-			playerY = 100;
-			player.style.top = `${playerY}px`;
-			player.style.left = `${playerX}px`;
-			gameOutput.innerHTML = '<p>You moved to your house.</p>';
-		});
-
-		document.getElementById('talk-npc-btn').addEventListener('click', () => {
-			if (isNear(player, npc)) {
-				gameOutput.innerHTML = '<p>You talked to the NPC.</p>';
-			} else {
-				gameOutput.innerHTML = '<p>Move closer to the NPC to talk.</p>';
-			}
-		});
-
-		document.getElementById('exit-btn').addEventListener('click', () => {
-			gameOutput.innerHTML = '<p>You exited the game.</p>';
-		});
-
-		// Check collision between player and other elements
-		function checkCollision() {
-			if (isNear(player, farm)) {
-				gameOutput.innerHTML = '<p>You are near the farm.</p>';
-			}
-			if (isNear(player, house)) {
-				gameOutput.innerHTML = '<p>You are near your house.</p>';
-			}
-			if (isNear(player, npc)) {
-				gameOutput.innerHTML = '<p>You are near the NPC.</p>';
-			}
-		}
-
-		// Check if two elements are near each other
-		function isNear(el1, el2) {
-			const rect1 = el1.getBoundingClientRect();
-			const rect2 = el2.getBoundingClientRect();
-			return (
-				rect1.left < rect2.right &&
-				rect1.right > rect2.left &&
-				rect1.top < rect2.bottom &&
-				rect1.bottom > rect2.top
-			);
-		}
 	</script>
 </body>
 </html>
