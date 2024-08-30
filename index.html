@@ -63,8 +63,20 @@
 		const menuBtn = document.getElementById('menu-btn');
 		const menu = document.getElementById('menu');
 
+		// Ensure the initial positions are set
 		let playerX = 100;
 		let playerY = 300;
+
+		// Set initial NPC position
+		let npcX = 400;
+		let npcY = 200;
+
+		// Apply the initial positions to the elements
+		player.style.left = playerX + 'px';
+		player.style.top = playerY + 'px';
+
+		npc.style.left = npcX + 'px';
+		npc.style.top = npcY + 'px';
 
 		// Player movement controls using arrow keys
 		document.addEventListener('keydown', (event) => {
@@ -88,9 +100,6 @@
 
 		// NPC random movement
 		setInterval(() => {
-			let npcX = parseInt(npc.style.left);
-			let npcY = parseInt(npc.style.top);
-			
 			let direction = Math.floor(Math.random() * 4);
 			switch (direction) {
 				case 0: // move up
