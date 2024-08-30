@@ -13,6 +13,9 @@
 			position: relative;
 			overflow: hidden;
 			margin: 0 auto;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
 		/* Style the UI elements */
@@ -25,6 +28,7 @@
 			border: 1px solid #ddd;
 			border-radius: 10px;
 			width: 200px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
 		.button {
@@ -36,6 +40,7 @@
 			border-radius: 10px;
 			cursor: pointer;
 			margin: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
 		.button:hover {
@@ -51,6 +56,7 @@
 			position: absolute;
 			top: 275px;
 			left: 375px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
 		/* Farm plot styles */
@@ -61,6 +67,9 @@
 			position: absolute;
 			top: 200px;
 			left: 600px;
+			background-color: #32CD32; /* Green */
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
 		/* Crop styles */
@@ -71,7 +80,37 @@
 			position: absolute;
 			top: 25px;
 			left: 25px;
-			display: none;
+			border-radius: 50%;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		/* SweetAlert styling */
+		.swal-modal {
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		.swal-title {
+			color: #228B22; /* Green */
+		}
+		
+		.swal-text {
+			color: #666;
+		}
+		
+		.swal-button {
+			background-color: #228B22; /* Green */
+			color: #fff;
+			border: none;
+			border-radius: 10px;
+			cursor: pointer;
+			margin: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		.swal-button:hover {
+			background-color: #32CD32; /* Light green */
 		}
 	</style>
 </head>
@@ -86,8 +125,7 @@
 			<button class="button" id="find-job" onclick="findJob()">Find Job</button>
 			<button class="button" onclick="goPub()">Go to Pub</button>
 			<button class="button" onclick="work()">Work</button>
-			<button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
-			<button class="button" onclick="girlfriendVisit()">Girlfriend Visit</button>
+			<button class="button" onclick="jakesInteraction()">Jakes Interaction</
 			<button class="button" onclick="plantCrop()">Plant Crop</button>
 			<button class="button" onclick="harvestCrop()">Harvest Crop</button>
 			<button class="button" onclick="upgradeTools()">Upgrade Tools</button>
@@ -103,31 +141,75 @@
 		</div>
 	</div>
 	
+	<script src="(link unavailable)"></script>
 	<script>
 		let job = null;
 		let bankBalance = 500;
 		
 		// Find a job
 		function findJob() {
-			alert('You started looking for a job.');
-			job = 'Farmer'; // Assign a job
-			alert(`You got a job as a ${job}!`);
+			swal.fire({
+				title: "Job Found!",
+				text: "You've been hired as a " + getJob() + "!",
+				icon: "success",
+			});
+			job = getJob();
 			document.getElementById('find-job').style.display = 'none';
+			setTimeout(function() {
+				document.getElementById('find-job').style.display = 'block';
+			}, 300000); // Show the find job button again after 5 minutes
+		}
+		
+		// Get a random farm-based job
+		function getJob() {
+			let jobs = ["Farmer", "Rancher", "Agricultural Specialist", "Farmhand", "Harvest Manager"];
+			return jobs[Math.floor(Math.random() * jobs.length)];
 		}
 		
 		// Go to pub
 		function goPub() {
-			alert('You are now at the pub.');
+			swal.fire({
+				title: "You're at the Pub!",
+				text: "You're now at the pub.",
+				icon: "success",
+			});
 		}
 		
 		// Work
 		function work() {
 			if (job) {
-				alert(`You worked as a ${job} and earned $100.`);
-				bankBalance += 100;
-				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+				swal.fire({
+					title: "Job Started!",
+					text: "You're working as a " + job + "!",
+					icon: "success",
+				});
+				setTimeout(function() {
+					swal.fire({
+						title: "Job Ended!",
+						text: "Your job as a " + job + " has ended.",
+						icon: "info",
+					});
+					job = null;
+				}, 300000); // Job lasts 5 minutes
+				// Automatic harvesting after 3 minutes
+				setTimeout(function() {
+					if (document.querySelector('.crop').style.display === 'block') {
+						swal.fire({
+							title: "Harvest Time!",
+							text: "Your crop has been harvested!",
+							icon: "success",
+						});
+						document.querySelector('.crop').style.display = 'none';
+						bankBalance += 200;
+						document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+					}
+				}, 180000); // Harvest after 3 minutes
 			} else {
-				alert('You need to find a job first!');
+				swal.fire({
+					title: "No Job!",
+					text: "You need to find a job first!",
+					icon: "error",
+				});
 			}
 		}
 		
@@ -136,41 +218,69 @@
 			let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
 			if (choice.toLowerCase() === 'yes') {
 				goPub(); // Take the player to the pub
+				setTimeout(function() {
+					swal.fire({
+						title: "Jakes Got Drunk!",
+						text: "Jakes got drunk! You need to take him home.",
+						icon: "info",
+					});
+					goHome(); // Take Jakes home
+				}, 5000); // Wait for 5 seconds before Jakes gets drunk
 			} else {
-				alert("You declined Jakes' offer.");
+				swal.fire({
+					title: "Declined!",
+					text: "You declined Jakes' offer.",
+					icon: "error",
+				});
 			}
 		}
 		
-		// Girlfriend visit
-		function girlfriendVisit() {
-			alert("Your girlfriend visited you!");
-			document.querySelector('.girlfriend').style.display = 'block';
-			setTimeout(function() {
-				document.querySelector('.girlfriend').style.display = 'none';
-			}, 5000); // Hide the girlfriend after 5 seconds
+		// Go home
+		function goHome() {
+			swal.fire({
+				title: "Took Jakes Home!",
+				text: "You took Jakes home.",
+				icon: "success",
+			});
 		}
 		
 		// Plant crop
 		function plantCrop() {
-			alert("You planted a crop!");
+			swal.fire({
+				title: "Crop Planted!",
+				text: "You planted a crop!",
+				icon: "success",
+			});
 			document.querySelector('.crop').style.display = 'block';
 		}
 		
 		// Harvest crop
 		function harvestCrop() {
 			if (document.querySelector('.crop').style.display === 'block') {
-				alert("You harvested your crop!");
+				swal.fire({
+					title: "Harvest Time!",
+					text: "Your crop has been harvested!",
+					icon: "success",
+				});
 				document.querySelector('.crop').style.display = 'none';
 				bankBalance += 200;
 				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
 			} else {
-				alert("You don't have any crops to harvest!");
+				swal.fire({
+					title: "No Crop!",
+					text: "You don't have any crops to harvest!",
+					icon: "error",
+				});
 			}
 		}
 		
 		// Upgrade tools
 		function upgradeTools() {
-			alert("You upgraded your tools!");
+			swal.fire({
+				title: "Tools Upgraded!",
+				text: "You upgraded your tools!",
+				icon: "success",
+			});
 			// Update player's tool level
 			let toolLevel = parseInt(document.querySelector('.ui p:nth-child(4)').innerText);
 			toolLevel++;
