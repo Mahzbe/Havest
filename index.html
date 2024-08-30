@@ -84,33 +84,22 @@
 			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 		}
 		
-		/* SweetAlert styling */
-		.swal-modal {
+		/* Alert container styles */
+		#alert-container {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
 			background-color: #fff;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			border: 1px solid #ddd;
+			padding: 20px;
+			display: none; /* Hide by default */
 		}
 		
-		.swal-title {
-			color: #228B22; /* Green */
-		}
-		
-		.swal-text {
-			color: #666;
-		}
-		
-		.swal-button {
-			background-color: #228B22; /* Green */
-			color: #fff;
-			border: none;
-			border-radius: 10px;
-			cursor: pointer;
-			margin: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		.swal-button:hover {
-			background-color: #32CD32; /* Light green */
+		#alert-message {
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
 		}
 	</style>
 </head>
@@ -125,35 +114,38 @@
 			<button class="button" id="find-job" onclick="findJob()">Find Job</button>
 			<button class="button" onclick="goPub()">Go to Pub</button>
 			<button class="button" onclick="work()">Work</button>
-			<button class="button" onclick="jakesInteraction()">Jakes Interaction</
+			<button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
 			<button class="button" onclick="plantCrop()">Plant Crop</button>
 			<button class="button" onclick="harvestCrop()">Harvest Crop</button>
 			<button class="button" onclick="upgradeTools()">Upgrade Tools</button>
 		</div>
 		
 		<!-- Player character -->
-		<div id="player">Player</div>
-		
+		<div id="player
+```Here is the rest of the code:
+
+```
 		<!-- Farm plot -->
 		<div class="farm-plot">
 			<!-- Crop -->
 			<div class="crop"></div>
 		</div>
+		
+		<!-- Alert container -->
+		<div id="alert-container">
+			<div id="alert-message"></div>
+		</div>
 	</div>
 	
-	<script src="(link unavailable)"></script>
 	<script>
 		let job = null;
 		let bankBalance = 500;
+		let toolLevel = 1;
 		
 		// Find a job
 		function findJob() {
-			swal.fire({
-				title: "Job Found!",
-				text: "You've been hired as a " + getJob() + "!",
-				icon: "success",
-			});
 			job = getJob();
+			showAlert(`You've been hired as a ${job}!`);
 			document.getElementById('find-job').style.display = 'none';
 			setTimeout(function() {
 				document.getElementById('find-job').style.display = 'block';
@@ -168,48 +160,25 @@
 		
 		// Go to pub
 		function goPub() {
-			swal.fire({
-				title: "You're at the Pub!",
-				text: "You're now at the pub.",
-				icon: "success",
-			});
+			showAlert("You're at the pub!");
 		}
 		
 		// Work
 		function work() {
 			if (job) {
-				swal.fire({
-					title: "Job Started!",
-					text: "You're working as a " + job + "!",
-					icon: "success",
-				});
+				showAlert(`You're working as a ${job}!`);
 				setTimeout(function() {
-					swal.fire({
-						title: "Job Ended!",
-						text: "Your job as a " + job + " has ended.",
-						icon: "info",
-					});
+					showAlert(`Your job as a ${job} has ended.`);
 					job = null;
 				}, 300000); // Job lasts 5 minutes
 				// Automatic harvesting after 3 minutes
 				setTimeout(function() {
 					if (document.querySelector('.crop').style.display === 'block') {
-						swal.fire({
-							title: "Harvest Time!",
-							text: "Your crop has been harvested!",
-							icon: "success",
-						});
-						document.querySelector('.crop').style.display = 'none';
-						bankBalance += 200;
-						document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+						harvestCrop();
 					}
 				}, 180000); // Harvest after 3 minutes
 			} else {
-				swal.fire({
-					title: "No Job!",
-					text: "You need to find a job first!",
-					icon: "error",
-				});
+				showAlert("You need to find a job first!");
 			}
 		}
 		
@@ -219,72 +188,53 @@
 			if (choice.toLowerCase() === 'yes') {
 				goPub(); // Take the player to the pub
 				setTimeout(function() {
-					swal.fire({
-						title: "Jakes Got Drunk!",
-						text: "Jakes got drunk! You need to take him home.",
-						icon: "info",
-					});
+					showAlert("Jakes got drunk! You need to take him home.");
 					goHome(); // Take Jakes home
 				}, 5000); // Wait for 5 seconds before Jakes gets drunk
 			} else {
-				swal.fire({
-					title: "Declined!",
-					text: "You declined Jakes' offer.",
-					icon: "error",
-				});
+				showAlert("You declined Jakes' offer.");
 			}
 		}
 		
 		// Go home
 		function goHome() {
-			swal.fire({
-				title: "Took Jakes Home!",
-				text: "You took Jakes home.",
-				icon: "success",
-			});
+			showAlert("You took Jakes home.");
 		}
 		
 		// Plant crop
 		function plantCrop() {
-			swal.fire({
-				title: "Crop Planted!",
-				text: "You planted a crop!",
-				icon: "success",
-			});
+			showAlert("You planted a crop!");
 			document.querySelector('.crop').style.display = 'block';
 		}
 		
 		// Harvest crop
 		function harvestCrop() {
 			if (document.querySelector('.crop').style.display === 'block') {
-				swal.fire({
-					title: "Harvest Time!",
-					text: "Your crop has been harvested!",
-					icon: "success",
-				});
+				showAlert("Your crop has been harvested!");
 				document.querySelector('.crop').style.display = 'none';
 				bankBalance += 200;
 				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
 			} else {
-				swal.fire({
-					title: "No Crop!",
-					text: "You don't have any crops to harvest!",
-					icon: "error",
-				});
+				showAlert("You don't have any crops to harvest!");
 			}
 		}
 		
 		// Upgrade tools
 		function upgradeTools() {
-			swal.fire({
-				title: "Tools Upgraded!",
-				text: "You upgraded your tools!",
-				icon: "success",
-			});
-			// Update player's tool level
-			let toolLevel = parseInt(document.querySelector('.ui p:nth-child(4)').innerText);
+			showAlert("You upgraded your tools!");
 			toolLevel++;
 			document.querySelector('.ui p:nth-child(4)').innerText = `Tool Level: ${toolLevel}`;
+		}
+		
+		// Show alert
+		function showAlert(message) {
+			const alertContainer = document.getElementById('alert-container');
+			const alertMessage = document.getElementById('alert-message');
+			alertMessage.innerText = message;
+			alertContainer.style.display = 'block'; /* Show the alert container */
+			setTimeout(() => {
+				alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
+			}, 3000);
 		}
 	</script>
 </body>
