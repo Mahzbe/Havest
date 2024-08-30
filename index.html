@@ -121,10 +121,7 @@
 		</div>
 		
 		<!-- Player character -->
-		<div id="player
-```Here is the rest of the code:
-
-```
+		<div id="player">Player</div>
 		<!-- Farm plot -->
 		<div class="farm-plot">
 			<!-- Crop -->
@@ -135,12 +132,39 @@
 		<div id="alert-container">
 			<div id="alert-message"></div>
 		</div>
+		
+		<!-- Weather and season display -->
+		<div id="weather-season">
+			<p id="weather"></p>
+			<p id="season"></p>
+		</div>
+		
+		<!-- Market prices display -->
+		<div id="market-prices">
+			<p>Crop Prices:</p>
+			<p id="crop-prices"></p>
+		</div>
+		
+		<!-- Leaderboard display -->
+		<div id="leaderboard">
+			<p>Leaderboard:</p>
+			<p id="leaderboard-list"></p>
+		</div>
 	</div>
 	
 	<script>
+		// Game variables
 		let job = null;
 		let bankBalance = 500;
 		let toolLevel = 1;
+		let cropPrices = {
+			"wheat": 10,
+			"corn": 15,
+			"soybeans": 20
+		};
+		let weather = "sunny";
+		let season = "spring";
+		let leaderboard = [];
 		
 		// Find a job
 		function findJob() {
@@ -236,6 +260,39 @@
 				alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
 			}, 3000);
 		}
+		
+		// Update weather and season display
+		function updateWeatherSeason() {
+			document.getElementById('weather').innerText = `Weather: ${weather}`;
+			document.getElementById('season').innerText = `Season: ${season}`;
+		}
+		
+		// Update market prices display
+		function updateMarketPrices() {
+			let cropPricesList = '';
+			for (let crop in cropPrices) {
+				cropPricesList += `${crop}: $${cropPrices[crop]} `;
+			}
+			document.getElementById('crop-prices').innerText = cropPricesList;
+		}
+		
+		// Update leaderboard display
+		function updateLeaderboard() {
+			let leaderboardList = '';
+			for (let i = 0; i < leaderboard.length; i++) {
+				leaderboardList += `${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].score} `;
+			}
+			document.getElementById('leaderboard-list').innerText = leaderboardList;
+		}
+		
+		// Initialize game
+		function initGame() {
+			updateWeatherSeason();
+			updateMarketPrices();
+			updateLeaderboard();
+		}
+		
+		initGame();
 	</script>
 </body>
 </html>
