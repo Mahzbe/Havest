@@ -1,67 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Senctuate Community</title>
-  <style>
-    /* existing styles */
-  </style>
+	<title>Harvest Haven</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f0f0f0;
+		}
+		
+		#game-container {
+			width: 800px;
+			margin: 40px auto;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		#game-info {
+			margin-bottom: 20px;
+		}
+		
+		#npc-locations {
+			margin-bottom: 20px;
+		}
+		
+		#player-input {
+			width: 100%;
+			height: 30px;
+			padding: 10px;
+			margin-bottom: 10px;
+		}
+		
+		#submit-btn {
+			background-color: #4CAF50;
+			color: #fff;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		
+		#game-output {
+			margin-top: 20px;
+		}
+	</style>
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-      </ul>
-      <div class="icon-space">
-        <img src="SC.png" alt="Senctuate Community Logo" style="width: 30px; height: 30px;">
-      </div>
-    </nav>
-  </header>
-  <main>
-    <section class="welcome">
-      <h1>Welcome to Senctuate Community!</h1>
-      <p>A sacred space for mental wellness, exploration, and connection.</p>
-      <p>Share your story, shatter the silence. Find solace in solidarity, and celebrate resilience. Share your thoughts, feelings, and experiences, ask for support, and seek guidance by using the space below. Simply type your comment, and share it with the community!</p>
-      <p><strong>Disclaimer: This page is still under construction. Currently, sharing is only available through commenting. Full operational features will be available soon. Thank you for your patience and understanding.</strong></p>
-    </section>
-    <section class="status-update">
-      <h2>Community Feed</h2>
-      <div id="disqus_thread"></div>
-      <script>
-        (function() {
-          var d = document, s = d.createElement('script');
-          s.src = '//senctuate.disqus.com/embed.js';
-          s.setAttribute('data-timestamp', +new Date());
-          (d.head || d.body).appendChild(s);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the <a href="(link unavailable)">comments powered by Disqus.</a></noscript>
-      <script id="dsq-count-scr" src="//senctuate.disqus.com/count.js" async></script>
-      <button><a href="#disqus_thread">Share Your Thoughts & Ask Questions</a></button>
-    </section>
-    <section id="about">
-      <h2>About Senctuate Community</h2>
-      <p>Welcome to Senctuate Community, a safe space and online haven for mental health support and connection. We're building a comprehensive platform where individuals can share their stories, find resources, and connect with others who understand their journey.</p>
-      <p>Our mission is to create a stigma-free environment where people can openly discuss their mental health, receive support, and find guidance. We believe that together, we can break down barriers and foster a community that uplifts and empowers each other.</p>
-      <p>By supporting Senctuate Community, you're contributing to a movement that prioritizes mental wellness and connection. Your donation helps us develop and maintain this platform, ensuring it remains a free and accessible resource for all.</p>
-      <p>Show your support by:</p>
-      <ul>
-        <li>Donating to our cause</li>
-        <li>Voting up our content to help us reach a wider audience</li>
-        <li>Sharing your story and experiences with our community</li>
-      </ul>
-      <p>Together, let's create a safe space where mental health matters. Thank you for being part of this journey!</p>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2024 Senctuate Team</p>
-    <button><a href="https://www.paypal.com/donate/?hosted_button_id=YGA8SL4Q8XZAE">Donate Now</a></button>
-  </footer>
-  <script src="notifications.js"></script>
+	<div id="game-container">
+		<div id="game-info">
+			<p>Day: <span id="day">1</span></p>
+			<p>Money: <span id="money">100</span></p>
+			<p>Farm Level: <span id="farm-level">1</span></p>
+			<p>Shop Level: <span id="shop-level">1</span></p>
+		</div>
+		<div id="npc-locations">
+			<!-- NPC locations will be displayed here -->
+		</div>
+		<input id="player-input" type="text">
+		<button id="submit-btn">Submit</button>
+		<div id="game-output">
+			<!-- Game output will be displayed here -->
+		</div>
+	</div>
+	
+	<script>
+		// Get game elements
+		const gameContainer = document.getElementById('game-container');
+		const gameInfo = document.getElementById('game-info');
+		const npcLocations = document.getElementById('npc-locations');
+		const playerInput = document.getElementById('player-input');
+		const submitBtn = document.getElementById('submit-btn');
+		const gameOutput = document.getElementById('game-output');
+		
+		// Initialize game state
+		let day = 1;
+		let money = 100;
+		let farmLevel = 1;
+		let shopLevel = 1;
+		
+		// Define NPCs
+		const npcs = [
+			{
+				name: 'Farmer Brown',
+				responses: [
+					'Hello! Welcome to Harvest Haven.',
+					"How's your farm coming along?",
+					"I've got some fresh produce for sale."
+				],
+				location: 'farm'
+			},
+			{
+				name: 'Town Mayor',
+				responses: [
+					'Greetings! I\'m the town mayor.',
+					'We\'re glad to have you in Harvest Haven.',
+					'Let me know if you need anything.'
+				],
+				location: 'town hall'
+			}
+		];
+		
+		// Handle player input
+		submitBtn.addEventListener('click', () => {
+			const playerInputValue = playerInput.value.trim();
+			if (playerInputValue) {
+				// Handle player input logic here
+				const npcResponse = getNPCResponse(playerInputValue);
+				gameOutput.innerHTML += `<p>${npcResponse}</p>`;
+				playerInput.value = '';
+			}
+		});
+		
+		// Get NPC response
+		function getNPCResponse(playerInput) {
+			// Simple response logic for now
+			const npc = npcs[Math.floor(Math.random() * npcs.length)];
+			return `${npc.name}: ${npc.responses[Math.floor(Math.random() * npc.responses.length)]}`;
+		}
+		
+		// Update game state
+		setInterval(() => {
+			day++;
+			money += 10;
+			farmLevel += 0.1;
+			shopLevel += 0.1;
+			gameInfo.innerHTML = `
+				<p>Day: <span id="day">${day}</span></p>
+				<p>Money: <span id="money">${money}</span></p>
+				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(1)}</span></p>
+				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(1)}</span></p>
+			`;
+		}, 1000);
+		
+		// Handle farming
+		function handleFarming() {
+			money += 20;
+			farmLevel += 1;
+			gameOutput.innerHTML += `<p>You worked on your farm and earned $20.</p>`;
+		}
+		
+		// Handle shopping
+		function handleShopping() {
+			money -= 10;
+			shopLevel += 1;
+			gameOutput.innerHTML += `<p>You bought some supplies for $10.</p>`;
+		}
+		
+		// Handle upgrading farm
+		function handleUpgradeFarm() {
+			if (money >= 50) {
+				money -= 50;
+				farmLevel += 1;
+				gameOutput.innerHTML += `<p>You upgraded your farm!</p>`;
+			} else {
+				gameOutput.innerHTML += `<p>You don't have enough money to upgrade your farm.</p>`;
+			}
+		}
+		
+		// Handle upgrading shop
+		function handleUpgradeShop() {
+			if (money >= 50) {
+				money -= 50;
+				shopLevel += 1;
+				gameOutput.innerHTML += `<p>You upgraded your shop!</p>`;
+			} else {
+				gameOutput.innerHTML += `<p>You don't have enough money to upgrade your shop.</p>`;
+			}
+		}
+		
+		// Handle player input
+		submitBtn.addEventListener('click', () => {
+			const playerInputValue = playerInput.value.trim();
+			if (playerInputValue) {
+				if (playerInputValue === 'farm') {
+					handleFarming();
+				} else if (playerInputValue === 'shop') {
+					handleShopping();
+				} else if (playerInputValue === 'upgrade farm') {
+					handleUpgradeFarm();
+				} else if (playerInputValue === 'upgrade shop') {
+					handleUpgradeShop();
+				} else {
+					const npcResponse = getNPCResponse(playerInputValue);
+					gameOutput.innerHTML += `<p>${npcResponse}</p>`;
+				}
+				playerInput.value = '';
+			}
+		});
+	</script>
 </body>
 </html>
-
-
