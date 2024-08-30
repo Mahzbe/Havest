@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pixel Characters</title>
+    <title>Pixel Characters with Joystick and Menu</title>
     <style>
         /* Basic styling for the landscape */
         #landscape {
@@ -26,7 +26,7 @@
             height: 10px;
         }
 
-        /* Human figure design */
+        /* Colors for pixel characters */
         .skin { background-color: #FFDAB9; }   /* Skin color */
         .hair { background-color: #8B4513; }   /* Hair color */
         .shirt { background-color: #1E90FF; }  /* Shirt color */
@@ -37,29 +37,68 @@
         #player { top: 100px; left: 100px; }
         #npc1 { top: 300px; left: 200px; }
         #npc2 { top: 400px; left: 400px; }
+
+        /* Menu styling */
+        #menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border: 2px solid black;
+        }
+
+        #menu h3 {
+            margin: 0 0 10px 0;
+        }
+
+        /* Joystick controls */
+        #joystick {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-button {
+            width: 50px;
+            height: 50px;
+            background-color: #888;
+            border: 1px solid black;
+            text-align: center;
+            line-height: 50px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        /* Hide the joystick arrows */
+        .arrow-controls {
+            display: none;
+        }
+
+        /* Show arrows for testing */
+        .control-button:hover {
+            background-color: #bbb;
+        }
     </style>
 </head>
 <body>
+    <!-- Game landscape -->
     <div id="landscape">
-        <!-- Player character -->
+        <!-- Player and NPC characters -->
         <div id="player" class="character">
-            <!-- Row 1 -->
+            <!-- Grid representation of the player character -->
             <div></div><div></div><div class="hair"></div><div></div><div></div>
-            <!-- Row 2 -->
             <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
-            <!-- Row 3 -->
             <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
-            <!-- Row 4 -->
             <div></div><div class="shirt"></div><div class="shirt"></div><div class="shirt"></div><div></div>
-            <!-- Row 5 -->
             <div></div><div class="pants"></div><div class="pants"></div><div class="pants"></div><div></div>
-            <!-- Row 6 -->
             <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
         </div>
 
-        <!-- NPC 1 -->
         <div id="npc1" class="character">
-            <!-- Similar design as the player with variations if needed -->
+            <!-- NPC1 grid representation -->
             <div></div><div></div><div class="hair"></div><div></div><div></div>
             <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
             <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
@@ -68,40 +107,103 @@
             <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
         </div>
 
-        <!-- NPC 2 -->
         <div id="npc2" class="character">
-            <!-- Same structure, different colors for uniqueness -->
+            <!-- NPC2 grid representation -->
             <div></div><div></div><div class="hair"></div><div></div><div></div>
             <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
             <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
             <div></div><div class="shirt"></div><div class="shirt"></div><div class="shirt"></div><div></div>
             <div></div><div class="pants"></div><div class="pants"></div><div class="pants"></div><div></div>
             <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
+        </div>
+
+        <!-- Game Menu -->
+        <div id="menu">
+            <h3>Game Menu</h3>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="resetGame()">Reset Game</button>
+        </div>
+
+        <!-- Joystick Controls -->
+        <div id="joystick">
+            <div class="control-button" onclick="movePlayer('up')">Up</div>
+            <div class="control-button">
+                <span onclick="movePlayer('left')">Left</span>
+                <span onclick="movePlayer('right')" style="margin-left: 20px;">Right</span>
+            </div>
+            <div class="control-button" onclick="movePlayer('down')">Down</div>
         </div>
     </div>
 
     <script>
-        // Movement controls (same as before, for each character)
-        document.addEventListener('keydown', (event) => {
+        // Movement function for the player character
+        function movePlayer(direction) {
             const player = document.getElementById('player');
             let top = parseInt(player.style.top);
             let left = parseInt(player.style.left);
 
-            switch (event.key) {
-                case 'ArrowUp':
+            switch (direction) {
+                case 'up':
                     player.style.top = (top - 10) + 'px';
                     break;
-                case 'ArrowDown':
+                case 'down':
                     player.style.top = (top + 10) + 'px';
                     break;
-                case 'ArrowLeft':
+                case 'left':
                     player.style.left = (left - 10) + 'px';
                     break;
-                case 'ArrowRight':
+                case 'right':
                     player.style.left = (left + 10) + 'px';
                     break;
             }
-        });
+        }
+
+        // Movement for NPCs (move in a random direction)
+        setInterval(() => {
+            const npcs = [document.getElementById('npc1'), document.getElementById('npc2')];
+
+            npcs.forEach(npc => {
+                let top = parseInt(npc.style.top);
+                let left = parseInt(npc.style.left);
+
+                // Randomly choose a direction
+                const direction = Math.floor(Math.random() * 4);
+                switch (direction) {
+                    case 0:
+                        npc.style.top = (top - 10) + 'px';
+                        break;
+                    case 1:
+                        npc.style.top = (top + 10) + 'px';
+                        break;
+                    case 2:
+                        npc.style.left = (left - 10) + 'px';
+                        break;
+                    case 3:
+                        npc.style.left = (left + 10) + 'px';
+                        break;
+                }
+            });
+        }, 1000);
+
+        // Start game function
+        function startGame() {
+            alert("Game started!");
+        }
+
+        // Reset game function
+        function resetGame() {
+            const player = document.getElementById('player');
+            player.style.top = '100px';
+            player.style.left = '100px';
+
+            const npc1 = document.getElementById('npc1');
+            npc1.style.top = '300px';
+            npc1.style.left = '200px';
+
+            const npc2 = document.getElementById('npc2');
+            npc2.style.top = '400px';
+            npc2.style.left = '400px';
+        }
     </script>
 </body>
 </html>
