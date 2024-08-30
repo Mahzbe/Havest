@@ -1,356 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Harvest Haven</title>
-	<style>
-		/* Add some basic styling for the landscape */
-		#game-area {
-			width: 800px;
-			height: 600px;
-			background-color: #87CEEB; /* Sky blue */
-			position: relative;
-			overflow: hidden;
-			margin: 0 auto;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		/* Style the UI elements */
-		.ui {
-			position: absolute;
-			top: 20px;
-			left: 20px;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			width: 200px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		.button {
-			width: 150px;
-			height: 50px;
-			background-color: #228B22; /* Green */
-			color: #fff;
-			border: none;
-			border-radius: 10px;
-			cursor: pointer;
-			margin: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		.button:hover {
-			background-color: #32CD32; /* Light green */
-		}
-		
-		/* Player character styles */
-		#player {
-			width: 50px;
-			height: 50px;
-			border-radius: 50%;
-			background-color: #FFA07A; /* Orange */
-			position: absolute;
-			top: 275px;
-			left: 375px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		/* Farm plot styles */
-		.farm-plot {
-			width: 100px;
-			height: 100px;
-			border: 1px solid #000;
-			position: absolute;
-			top: 200px;
-			left: 600px;
-			background-color: #32CD32; /* Green */
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		/* Crop styles */
-		.crop {
-			width: 50px;
-			height: 50px;
-			background-color: #32CD32; /* Green */
-			position: absolute;
-			top: 25px;
-			left: 25px;
-			border-radius: 50%;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		/* Alert container styles */
-		#alert-container {
-			position: fixed;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			background-color: #fff;
-			border: 1px solid #ddd;
-			padding: 20px;
-			display: none; /* Hide by default */
-		}
-		
-		#alert-message {
-			font-size: 18px;
-			font-weight: bold;
-			color: #333;
-		}
-		
-		/* Weather and season display styles */
-		#weather-season {
-			position: absolute;
-			top: 20px;
-			right: 20px;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			width: 200px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-			margin-bottom: 20px; /* Add margin bottom */
-		}
-		
-		/* Market prices display styles */
-		#market-prices {
-			position: absolute;
-			top: 150px;
-			right: 20px;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			width: 200px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-			margin-bottom: 20px; /* Add margin bottom */
-		}
-		
-		/*  Leaderboard display styles */
-		#leaderboard {
-			position: absolute;
-			top: 280px;
-			right: 20px;
-			background-color: #fff;
-			padding: 20px;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			width: 200px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-		}
-		
-		/* Style the leaderboard list */
-		#leaderboard-list {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-		
-		#leaderboard-list li {
-			padding: 10px;
-			border-bottom: 1px solid #ddd;
-		}
-		
-		#leaderboard-list li:last-child {
-			border-bottom: none;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harvest Haven</title>
+    <style>
+        /* Add some basic styling for the landscape */
+        #game-area {
+            width: 800px;
+            height: 600px;
+            background-color: #87CEEB; /* Sky blue */
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Style the UI elements */
+        .ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .button {
+            width: 150px;
+            height: 50px;
+            background-color: #228B22; /* Green */
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .button:hover {
+            background-color: #32CD32; /* Light green */
+        }
+        
+        /* Player character styles */
+        #player {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #FFA07A; /* Orange */
+            position: absolute;
+            top: 275px;
+            left: 375px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Farm plot styles */
+        .farm-plot {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            position: absolute;
+            top: 200px;
+            left: 600px;
+            background-color: #32CD32; /* Green */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Crop styles */
+        .crop {
+            width: 50px;
+            height: 50px;
+            background-color: #32CD32; /* Green */
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Alert container styles */
+        #alert-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            display: none; /* Hide by default */
+        }
+        
+        #alert-message {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Weather and season display styles */
+        #weather-season {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Add margin bottom */
+        }
+        
+        /* Market prices display styles */
+        #market-prices {
+            position: absolute;
+            top: 150px;
+            right: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Add margin bottom */
+        }
+        
+        /* Leaderboard display styles */
+        #leaderboard {
+            position: absolute;
+            top: 280px;
+            right: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Style the leaderboard list */
+        #leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #leaderboard-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        #leaderboard-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-	<div id="game-area">
-		<!-- UI elements -->
-		<div class="ui">
-			<h2>Harvest Haven</h2>
-			<p>Net Worth: $1000</p>
-			<p>Bank Balance: $500</p>
-			<p>Tool Level: 1</p>
-			<button class="button" id="find-job" onclick="findJob()">Find Job</button>
-			<button class="button" onclick="goPub()">Go to Pub</button>
-			<button class="button" onclick="work()">Work</button>
-			<button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
-			<button class="button" onclick="plantCrop()">Plant Crop</button>
-			<button class="button" onclick="harvestCrop()">Harvest Crop</button>
-			<button class="button" onclick="upgradeTools()">Upgrade Tools</button>
-		</div>
-		
-		<!-- Player character -->
-		<div id="player">Player</div>
-		
-		<!-- Farm plot -->
-		<div class="farm-plot">
-			<!-- Crop -->
-			<div class="crop"></div>
-		</div>
-		
-		<!-- Alert container -->
-		<div id="alert-container">
-			<div id="alert-message"></div>
-		</div>
-		
-		<!-- Weather and season display -->
-		<div id="weather-season">
-			<p id="weather"></p>
-			<p id="season"></p>
-		</div>
-		
-		<!-- Market prices display -->
-		<div id="market-prices">
-			<p>Crop Prices:</p>
-			<p id="crop-prices"></p>
-		</div>
-		
-		<!-- Leaderboard display -->
-		<div id="leaderboard">
-			<p>Leaderboard:</p>
-			<ul id="leaderboard-list"></ul>
-		</div>
-	</div>
-	
-	<script>
-		// Game variables
-		let job = null;
-		let bankBalance = 500;
-		let toolLevel = 1;
-		let cropPrices = {
-			"wheat": 10,
-			"corn": 15,
-			"soybeans": 20
-		};
-		let weather = "sunny";
-		let season = "spring";
-		let leaderboard = [];
-		
-		// Find a job
-		function findJob() {
-			job = getJob();
-			showAlert(`You've been hired as a ${job}!`);
-			document.getElementById('find-job').style.display = 'none';
-			setTimeout(function() {
-				document.getElementById('find-job').style.display = 'block';
-			}, 300000); // Show the find job button again after 5 minutes
-		}
-		
-		// Get a random farm-based job
-		function getJob() {
-			let jobs = ["Farmer", "Rancher", "Agricultural Specialist", "Farmhand", "Harvest Manager"];
-			return jobs[Math.floor(Math.random() * jobs.length)];
-		}
-		
-		// Go to pub
-		function goPub() {
-			showAlert("You're at the pub!");
-		}
-		
-		// Work
-		function work() {
-			if (job) {
-				showAlert(`You're working as a ${job}!`);
-				setTimeout(function() {
-					showAlert(`Your job as a ${job} has ended.`);
-					job = null;
-				}, 300000); // Job lasts 5 minutes
-				// Automatic harvesting after 3 minutes
-				setTimeout(function() {
-					if (document.querySelector('.crop').style.display === 'block') {
-						harvestCrop();
-					}
-				}, 180000); // Harvest after 3 minutes
-			} else {
-				showAlert("You need to find a job first!");
-			}
-		// Jakes interaction
-		function jakesInteraction() {
-			let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
-			if (choice.toLowerCase() === 'yes') {
-				goPub(); // Take the player to the pub
-				setTimeout(function() {
-					showAlert("Jakes got drunk! You need to take him home.");
-					goHome(); // Take Jakes home
-				}, 5000); // Wait for 5 seconds before Jakes gets drunk
-			} else {
-				showAlert("You declined Jakes' offer.");
-			}
-		}
-		
-		// Go home
-		function goHome() {
-			showAlert("You took Jakes home.");
-		}
-		
-		// Plant crop
-		function plantCrop() {
-			showAlert("You planted a crop!");
-			document.querySelector('.crop').style.display = 'block';
-		}
-		
-		// Harvest crop
-		function harvestCrop() {
-			if (document.querySelector('.crop').style.display === 'block') {
-				showAlert("Your crop has been harvested!");
-				document.querySelector('.crop').style.display = 'none';
-				bankBalance += 200;
-				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
-			} else {
-				showAlert("You don't have any crops to harvest!");
-			}
-		}
-		
-		// Upgrade tools
-		function upgradeTools() {
-			showAlert("You upgraded your tools!");
-			toolLevel++;
-			bankBalance -= 100; // Deduct 100 from bank balance
-			document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
-			document.querySelector('.ui p:nth-child(4)').innerText = `Tool Level: ${toolLevel}`;
-		}
-		
-		// Show alert
-		function showAlert(message) {
-			const alertContainer = document.getElementById('alert-container');
-			const alertMessage = document.getElementById('alert-message');
-			alertMessage.innerText = message;
-			alertContainer.style.display = 'block'; /* Show the alert container */
-			setTimeout(() => {
-				alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
-			}, 3000);
-		}
-		
-		// Update weather and season display
-		function updateWeatherSeason() {
-			document.getElementById('weather').innerText = `Weather: ${weather}`;
-			document.getElementById('season').innerText = `Season: ${season}`;
-		}
-		
-		// Update market prices display
-		function updateMarketPrices() {
-			let cropPricesList = '';
-			for (let crop in cropPrices) {
-				cropPricesList += `${crop}: $${cropPrices[crop]} `;
-			}
-			document.getElementById('crop-prices').innerText = cropPricesList;
-		}
-		
-		// Update leaderboard display
-		function updateLeaderboard() {
-			let leaderboardList = '';
-			for (let i = 0; i < leaderboard.length; i++) {
-				leaderboardList += `${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].score} `;
-			}
-			document.getElementById('leaderboard-list').innerText = leaderboardList;
-		}
-		
-		// Initialize game
-		function initGame() {
-			updateWeatherSeason();
-			updateMarketPrices();
-			updateLeaderboard();
-		}
-		
-		initGame();
-	</script>
+    <div id="game-area">
+        <!-- UI elements -->
+        <div class="ui">
+            <h2>Harvest Haven</h2>
+            <p>Net Worth: $1000</p>
+            <p>Bank Balance: $500</p>
+            <p>Tool Level: 1</p>
+            <button class="button" id="find-job" onclick="findJob()">Find Job</button>
+            <button class="button" onclick="goPub()">Go to Pub</button>
+            <button class="button" onclick="work()">Work</button>
+            <button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
+            <button class="button" onclick="plantCrop()">Plant Crop</button>
+            <button class="button" onclick="harvestCrop()">Harvest Crop</button>
+            <button class="button" onclick="upgradeTools()">Upgrade Tools</button>
+        </div>
+        
+        <!-- Player character -->
+        <div id="player">Player</div>
+        
+        <!-- Farm plot -->
+        <div class="farm-plot">
+            <!-- Crop -->
+            <div class="crop"></div>
+        </div>
+        
+        <!-- Alert container -->
+        <div id="alert-container">
+            <div id="alert-message"></div>
+        </div>
+        
+        <!-- Weather and season display -->
+        <div id="weather-season">
+            <p id="weather"></p>
+            <p id="season"></p>
+        </div>
+        
+        <!-- Market prices display -->
+        <div id="market-prices">
+            <p>Crop Prices:</p>
+            <p id="crop-prices"></p>
+        </div>
+        
+        <!-- Leaderboard display -->
+        <div id="leaderboard">
+            <p>Leaderboard:</p>
+            <ul id="leaderboard-list"></ul>
+        </div>
+    </div>
+    
+    <script>
+        // Game variables
+        let job = null;
+        let bankBalance = 500;
+        let toolLevel = 1;
+        let cropPrices = {
+            "wheat": 10,
+            "corn": 15,
+            "soybeans": 20
+        };
+        let weather = "sunny";
+        let season = "spring";
+        let leaderboard = [];
+        
+        // Find a job
+        function findJob() {
+            job = getJob();
+            showAlert(`You've been hired as a ${job}!`);
+            document.getElementById('find-job').style.display = 'none';
+            setTimeout(function() {
+                document.getElementById('find-job').style.display = 'block';
+            }, 300000); // Show the find job button again after 5 minutes
+        }
+        
+        // Get a random farm-based job
+        function getJob() {
+            let jobs = ["Farmer", "Rancher", "Agricultural Specialist", "Farmhand", "Harvest Manager"];
+            return jobs[Math.floor(Math.random() * jobs.length)];
+        }
+        
+        // Go to pub
+        function goPub() {
+            showAlert("You're at the pub!");
+        }
+        
+        // Work
+        function work() {
+            if (job) {
+                showAlert(`You're working as a ${job}!`);
+                setTimeout(function() {
+                    showAlert(`Your job as a ${job} has ended.`);
+                    job = null;
+                }, 300000); // Job lasts 5 minutes
+                // Automatic harvesting after 3 minutes
+                setTimeout(function() {
+                    if (document.querySelector('.crop').style.display === 'block') {
+                        harvestCrop();
+                    }
+                }, 180000); // Harvest after 3 minutes
+            } else {
+                showAlert("You need to find a job first!");
+            }
+        }
+        
+        // Jakes interaction
+        function jakesInteraction() {
+            let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
+            if (choice.toLowerCase() === 'yes') {
+                goPub(); // Take the player to the pub
+                setTimeout(function() {
+                    showAlert("Jakes got drunk! You need to take him home.");
+                    goHome(); // Take Jakes home
+                }, 5000); // Wait for 5 seconds before Jakes gets drunk
+            } else {
+                showAlert("You declined Jakes' offer.");
+            }
+        }
+        
+        // Go home
+        function goHome() {
+            showAlert("You took Jakes home.");
+        }
+        
+        // Plant crop
+        function plantCrop() {
+            showAlert("You planted a crop!");
+            document.querySelector('.crop').style.display = 'block';
+        }
+        
+        // Harvest crop
+        function harvestCrop() {
+            if (document.querySelector('.crop').style.display === 'block') {
+                showAlert("Your crop has been harvested!");
+                document.querySelector('.crop').style.display = 'none';
+                bankBalance += 200;
+                document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+            } else {
+                showAlert("You don't have any crops to harvest!");
+            }
+        }
+        
+        // Upgrade tools
+        function upgradeTools() {
+            showAlert("You upgraded your tools!");
+            toolLevel++;
+            bankBalance -= 100; // Deduct 100 from bank balance
+            document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+            document.querySelector('.ui p:nth-child(4)').innerText = `Tool Level: ${toolLevel}`;
+        }
+        
+        // Show alert
+        function showAlert(message) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertMessage = document.getElementById('alert-message');
+            alertMessage.innerText = message;
+            alertContainer.style.display = 'block'; /* Show the alert container */
+            setTimeout(() => {
+                alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
+            }, 3000);
+        }
+        
+        // Update weather and season display
+        function updateWeatherSeason() {
+            document.getElementById('weather').innerText = `Weather: ${weather}`;
+            document.getElementById('season').innerText = `Season: ${season}`;
+        }
+        
+        // Update market prices display
+        function updateMarketPrices() {
+            let cropPricesList = '';
+            for (let crop in cropPrices) {
+                cropPricesList += `${crop}: $${cropPrices[crop]} `;
+            }
+            document.getElementById('crop-prices').innerText = cropPricesList;
+        }
+        
+        // Update leaderboard display
+        function updateLeaderboard() {
+            let leaderboardList = '';
+            for (let i = 0; i < leaderboard.length; i++) {
+                leaderboardList += `${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].score} `;
+            }
+            document.getElementById('leaderboard-list').innerText = leaderboardList;
+        }
+        
+        // Initialize game
+        function initGame() {
+            updateWeatherSeason();
+            updateMarketPrices();
+            updateLeaderboard();
+        }
+        
+        initGame();
+    </script>
 </body>
 </html>
