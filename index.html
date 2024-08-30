@@ -63,6 +63,7 @@
 			<button class="button" onclick="findJob()">Find Job</button>
 			<button class="button" onclick="goPub()">Go to Pub</button>
 			<button class="button" onclick="work()">Work</button>
+			<button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
 		</div>
 		
 		<!-- Player character -->
@@ -93,6 +94,12 @@
 			} else {
 				alert('You need to find a job first!');
 			}
+		}
+		
+		// Jakes interaction
+		function jakesInteraction() {
+			alert("Jakes: 'Hey, want to grab a drink at the pub?'");
+			goPub(); // Take the player to the pub
 		}
 	</script>
 </body>
