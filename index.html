@@ -24,6 +24,7 @@
 			padding: 20px;
 			border: 1px solid #ddd;
 			border-radius: 10px;
+			width: 200px;
 		}
 		
 		.button {
@@ -51,6 +52,27 @@
 			top: 275px;
 			left: 375px;
 		}
+		
+		/* Farm plot styles */
+		.farm-plot {
+			width: 100px;
+			height: 100px;
+			border: 1px solid #000;
+			position: absolute;
+			top: 200px;
+			left: 600px;
+		}
+		
+		/* Crop styles */
+		.crop {
+			width: 50px;
+			height: 50px;
+			background-color: #32CD32; /* Green */
+			position: absolute;
+			top: 25px;
+			left: 25px;
+			display: none;
+		}
 	</style>
 </head>
 <body>
@@ -60,24 +82,37 @@
 			<h2>Harvest Haven</h2>
 			<p>Net Worth: $1000</p>
 			<p>Bank Balance: $500</p>
-			<button class="button" onclick="findJob()">Find Job</button>
+			<p>Tool Level: 1</p>
+			<button class="button" id="find-job" onclick="findJob()">Find Job</button>
 			<button class="button" onclick="goPub()">Go to Pub</button>
 			<button class="button" onclick="work()">Work</button>
 			<button class="button" onclick="jakesInteraction()">Jakes Interaction</button>
+			<button class="button" onclick="girlfriendVisit()">Girlfriend Visit</button>
+			<button class="button" onclick="plantCrop()">Plant Crop</button>
+			<button class="button" onclick="harvestCrop()">Harvest Crop</button>
+			<button class="button" onclick="upgradeTools()">Upgrade Tools</button>
 		</div>
 		
 		<!-- Player character -->
 		<div id="player">Player</div>
+		
+		<!-- Farm plot -->
+		<div class="farm-plot">
+			<!-- Crop -->
+			<div class="crop"></div>
+		</div>
 	</div>
 	
 	<script>
 		let job = null;
+		let bankBalance = 500;
 		
 		// Find a job
 		function findJob() {
 			alert('You started looking for a job.');
 			job = 'Farmer'; // Assign a job
 			alert(`You got a job as a ${job}!`);
+			document.getElementById('find-job').style.display = 'none';
 		}
 		
 		// Go to pub
@@ -89,8 +124,8 @@
 		function work() {
 			if (job) {
 				alert(`You worked as a ${job} and earned $100.`);
-				// Update bank balance
-				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $600`;
+				bankBalance += 100;
+				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
 			} else {
 				alert('You need to find a job first!');
 			}
@@ -98,8 +133,48 @@
 		
 		// Jakes interaction
 		function jakesInteraction() {
-			alert("Jakes: 'Hey, want to grab a drink at the pub?'");
-			goPub(); // Take the player to the pub
+			let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
+			if (choice.toLowerCase() === 'yes') {
+				goPub(); // Take the player to the pub
+			} else {
+				alert("You declined Jakes' offer.");
+			}
+		}
+		
+		// Girlfriend visit
+		function girlfriendVisit() {
+			alert("Your girlfriend visited you!");
+			document.querySelector('.girlfriend').style.display = 'block';
+			setTimeout(function() {
+				document.querySelector('.girlfriend').style.display = 'none';
+			}, 5000); // Hide the girlfriend after 5 seconds
+		}
+		
+		// Plant crop
+		function plantCrop() {
+			alert("You planted a crop!");
+			document.querySelector('.crop').style.display = 'block';
+		}
+		
+		// Harvest crop
+		function harvestCrop() {
+			if (document.querySelector('.crop').style.display === 'block') {
+				alert("You harvested your crop!");
+				document.querySelector('.crop').style.display = 'none';
+				bankBalance += 200;
+				document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+			} else {
+				alert("You don't have any crops to harvest!");
+			}
+		}
+		
+		// Upgrade tools
+		function upgradeTools() {
+			alert("You upgraded your tools!");
+			// Update player's tool level
+			let toolLevel = parseInt(document.querySelector('.ui p:nth-child(4)').innerText);
+			toolLevel++;
+			document.querySelector('.ui p:nth-child(4)').innerText = `Tool Level: ${toolLevel}`;
 		}
 	</script>
 </body>
