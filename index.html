@@ -134,6 +134,10 @@
         #leaderboard {
             position: absolute;
             top: 280px;
+        /* Leaderboard display styles */
+        #leaderboard {
+            position: absolute;
+            top: 280px;
             right: 20px;
             background-color: #fff;
             padding: 20px;
@@ -266,6 +270,7 @@
         
         // Jakes interaction
         function jakesInteraction() {
+            let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with
             let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
             if (choice.toLowerCase() === 'yes') {
                 goPub(); // Take the player to the pub
@@ -353,6 +358,28 @@
         }
         
         initGame();
+        
+        // Set interval to prompt player to go to work every 10 minutes
+        setInterval(function() {
+            if (job) {
+                showAlert(`Time to go to work as a ${job}!`);
+                // Stop any current activity (e.g., drinking at the pub)
+                goHome();
+                // Simulate work button click
+                document.getElementById('work').click();
+                // Pay player after work
+                payPlayer();
+            } else {
+                showAlert("You need to find a job first!");
+            }
+        }, 600000); // 10 minutes in milliseconds
+        
+        // Pay player after work
+        function payPlayer() {
+            bankBalance += 100; // Pay player $100
+            document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+            showAlert("You got paid $100 for your work!");
+        }
     </script>
 </body>
 </html>
