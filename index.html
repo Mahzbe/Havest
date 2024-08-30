@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Farm Life</title>
+    <title>Pixel Characters</title>
     <style>
+        /* Basic styling for the landscape */
         #landscape {
             width: 800px;
             height: 600px;
@@ -10,156 +11,96 @@
             position: relative;
             border: 2px solid black;
         }
-        
-        #house, #farm, #npc, #player, #npc2 {
-            width: 50px;
-            height: 50px;
+
+        /* Character grid */
+        .character {
+            display: grid;
+            grid-template-columns: repeat(5, 10px); /* 5 columns */
+            grid-template-rows: repeat(10, 10px);  /* 10 rows */
             position: absolute;
-            border-radius: 10%;
-        }
-        
-        #house {
-            background-color: #8B4513; /* Brown */
-            top: 100px;
-            left: 50px;
-        }
-        
-        #farm {
-            background-color: #32CD32; /* Lime green */
-            top: 400px;
-            left: 300px;
-        }
-        
-        #npc {
-            background-color: #FF0000; /* Red */
-            top: 200px;
-            left: 400px;
-        }
-        
-        #npc2 {
-            background-color: #00FF00; /* Green */
-            top: 100px;
-            left: 600px;
-        }
-        
-        #player {
-            background-color: #FFFF00; /* Yellow */
-            top: 300px;
-            left: 100px;
         }
 
-        #menu {
-            margin-top: 20px;
+        /* Define colors for the pixel art */
+        .pixel {
+            width: 10px;
+            height: 10px;
         }
 
-        button {
-            margin: 10px;
-        }
+        /* Human figure design */
+        .skin { background-color: #FFDAB9; }   /* Skin color */
+        .hair { background-color: #8B4513; }   /* Hair color */
+        .shirt { background-color: #1E90FF; }  /* Shirt color */
+        .pants { background-color: #000080; }  /* Pants color */
+        .shoes { background-color: #A52A2A; }  /* Shoes color */
+
+        /* Example placement of characters */
+        #player { top: 100px; left: 100px; }
+        #npc1 { top: 300px; left: 200px; }
+        #npc2 { top: 400px; left: 400px; }
     </style>
 </head>
 <body>
     <div id="landscape">
-        <div id="house"></div>
-        <div id="farm"></div>
-        <div id="npc"></div>
-        <div id="npc2"></div>
-        <div id="player"></div>
-    </div>
-    <button id="menu-btn">Menu</button>
-    <div id="menu" style="display: none;">
-        <p>1. Get a job on the farm</p>
-        <p>2. Talk to NPC</p>
-        <p>3. Go to your house</p>
+        <!-- Player character -->
+        <div id="player" class="character">
+            <!-- Row 1 -->
+            <div></div><div></div><div class="hair"></div><div></div><div></div>
+            <!-- Row 2 -->
+            <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
+            <!-- Row 3 -->
+            <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
+            <!-- Row 4 -->
+            <div></div><div class="shirt"></div><div class="shirt"></div><div class="shirt"></div><div></div>
+            <!-- Row 5 -->
+            <div></div><div class="pants"></div><div class="pants"></div><div class="pants"></div><div></div>
+            <!-- Row 6 -->
+            <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
+        </div>
+
+        <!-- NPC 1 -->
+        <div id="npc1" class="character">
+            <!-- Similar design as the player with variations if needed -->
+            <div></div><div></div><div class="hair"></div><div></div><div></div>
+            <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
+            <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
+            <div></div><div class="shirt"></div><div class="shirt"></div><div class="shirt"></div><div></div>
+            <div></div><div class="pants"></div><div class="pants"></div><div class="pants"></div><div></div>
+            <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
+        </div>
+
+        <!-- NPC 2 -->
+        <div id="npc2" class="character">
+            <!-- Same structure, different colors for uniqueness -->
+            <div></div><div></div><div class="hair"></div><div></div><div></div>
+            <div></div><div class="hair"></div><div class="hair"></div><div class="hair"></div><div></div>
+            <div></div><div class="skin"></div><div class="skin"></div><div class="skin"></div><div></div>
+            <div></div><div class="shirt"></div><div class="shirt"></div><div class="shirt"></div><div></div>
+            <div></div><div class="pants"></div><div class="pants"></div><div class="pants"></div><div></div>
+            <div></div><div class="shoes"></div><div class="shoes"></div><div class="shoes"></div><div></div>
+        </div>
     </div>
 
     <script>
-        const player = document.getElementById('player');
-        const npc = document.getElementById('npc');
-        const npc2 = document.getElementById('npc2');
-        const menuBtn = document.getElementById('menu-btn');
-        const menu = document.getElementById('menu');
-
-        // Initial positions
-        let playerX = 100;
-        let playerY = 300;
-
-        let npcX = 400;
-        let npcY = 200;
-
-        let npc2X = 600;
-        let npc2Y = 100;
-
-        // Update positions
-        function updatePositions() {
-            player.style.left = playerX + 'px';
-            player.style.top = playerY + 'px';
-
-            npc.style.left = npcX + 'px';
-            npc.style.top = npcY + 'px';
-
-            npc2.style.left = npc2X + 'px';
-            npc2.style.top = npc2Y + 'px';
-        }
-
-        // Initialize positions
-        updatePositions();
-
-        // Player movement controls
+        // Movement controls (same as before, for each character)
         document.addEventListener('keydown', (event) => {
+            const player = document.getElementById('player');
+            let top = parseInt(player.style.top);
+            let left = parseInt(player.style.left);
+
             switch (event.key) {
                 case 'ArrowUp':
-                    if (playerY > 0) playerY -= 10;
+                    player.style.top = (top - 10) + 'px';
                     break;
                 case 'ArrowDown':
-                    if (playerY < 550) playerY += 10;
+                    player.style.top = (top + 10) + 'px';
                     break;
                 case 'ArrowLeft':
-                    if (playerX > 0) playerX -= 10;
+                    player.style.left = (left - 10) + 'px';
                     break;
                 case 'ArrowRight':
-                    if (playerX < 750) playerX += 10;
+                    player.style.left = (left + 10) + 'px';
                     break;
             }
-            updatePositions();
-        });
-
-        // NPC random movement
-        function moveNPC(npcX, npcY) {
-            const directions = ['up', 'down', 'left', 'right'];
-            const direction = directions[Math.floor(Math.random() * directions.length)];
-            switch (direction) {
-                case 'up':
-                    if (npcY > 0) npcY -= 10;
-                    break;
-                case 'down':
-                    if (npcY < 550) npcY += 10;
-                    break;
-                case 'left':
-                    if (npcX > 0) npcX -= 10;
-                    break;
-                case 'right':
-                    if (npcX < 750) npcX += 10;
-                    break;
-            }
-            return { x: npcX, y: npcY };
-        }
-
-        // Move both NPCs every second
-        setInterval(() => {
-            let npcPosition = moveNPC(npcX, npcY);
-            npcX = npcPosition.x;
-            npcY = npcPosition.y;
-
-            let npc2Position = moveNPC(npc2X, npc2Y);
-            npc2X = npc2Position.x;
-            npc2Y = npc2Position.y;
-
-            updatePositions();
-        }, 1000);
-
-        // Toggle menu
-        menuBtn.addEventListener('click', () => {
-            menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
         });
     </script>
 </body>
