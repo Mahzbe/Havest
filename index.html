@@ -65,15 +65,20 @@
 		<p>Farm Level: <span id="farm-level">1</span></p>
 		<p>Shop Level: <span id="shop-level">1</span></p>
 	</div>
-	<input id="player-input" type="text" placeholder="Enter command (e.g., 'move to farm', 'talk to npc', etc.)">
-	<button id="submit-btn">Submit</button>
+	<div>
+		<button onclick="movePlayer('farm')">Go to Farm</button>
+		<button onclick="movePlayer('shop')">Go to Shop</button>
+		<button onclick="interactNPC()">Talk to NPC</button>
+		<button onclick="workOnFarm()">Work on Farm</button>
+		<button onclick="shop()">Shop</button>
+		<button onclick="upgradeFarm()">Upgrade Farm</button>
+		<button onclick="upgradeShop()">Upgrade Shop</button>
+	</div>
 	<div id="game-output"></div>
 	
 	<script>
 		// Get game elements
 		const gameInfo = document.getElementById('game-info');
-		const playerInput = document.getElementById('player-input');
-		const submitBtn = document.getElementById('submit-btn');
 		const gameOutput = document.getElementById('game-output');
 		const landscape = document.getElementById('landscape');
 		const farm = document.getElementById('farm');
@@ -107,62 +112,92 @@
 					'We\'re glad to have you in Harvest Haven.',
 					'Let me know if you need anything.'
 				],
-				location: 'town hall'
+				location: 'shop'
 			}
 		];
 		
-		// Handle player input
-		submitBtn.addEventListener('click', () => {
-			const playerInputValue = playerInput.value.trim();
-			if (playerInputValue) {
-				// Handle player input logic here
-				if (playerInputValue === 'move to farm') {
-					playerLocation = 'farm';
-					player.style.top = '200px';
-					player.style.left = '200px';
-				} else if (playerInputValue === 'move to shop') {
-					playerLocation = 'shop';
-					player.style.top = '300px';
-					player.style.left = '400px';
-				} else if (playerInputValue === 'talk to npc') {
-					const npcResponse = getNPCResponse();
-					gameOutput.innerHTML += `<p>${npcResponse}</p>`;
-				} else if (playerInputValue === 'work on farm') {
-					handleFarming();
-				} else if (playerInputValue === 'shop') {
-					handleShopping();
-				} else if (playerInputValue === 'upgrade farm') {
-					handleUpgradeFarm();
-				} else if (playerInputValue === 'upgrade shop') {
-					handleUpgradeShop();
-				}
-				playerInput.value = '';
+		// Add player movement controls
+		document.addEventListener('keydown', (event) => {
+			const moveSpeed = 10;
+			switch (event.key) {
+				case 'ArrowUp':
+					player.style.top = `${parseInt(player.style.top) - moveSpeed}px`;
+					break;
+				case 'ArrowDown':
+					player.style.top = `${parseInt(player.style.top) + moveSpeed}px`;
+					break;
+				case 'ArrowLeft':
+					player.style.left = `${parseInt(player.style.left) - moveSpeed}px`;
+					break;
+				case 'ArrowRight':
+					player.style.left = `${parseInt(player.style.left) + moveSpeed}px`;
+					break;
 			}
+			checkCollisionWithNPC();
 		});
 		
-		// Get NPC response
-		function getNPCResponse() {
-			// Simple response logic for now
-			const npc = npcs.find(npc => npc.location === npcLocation);
-			return `${npc.name}: ${npc.responses[Math.floor(Math.random() * npc.responses.length)]}`;
+		// Move player to specific location
+		function movePlayer(location) {
+			if (location === 'farm') {
+				player.style.top = '200px';
+				player.style.left = '200px';
+				playerLocation = 'farm';
+			} else if (location === 'shop') {
+				player.style.top = '300px';
+				player.style.left = '400px';
+				playerLocation = 'shop';
+			}
+			checkCollisionWithNPC();
+		}
+		
+		// Check if player collides with NPC
+		function checkCollisionWithNPC() {
+			const playerRect = player.getBoundingClientRect();
+			const npcRect = npc.getBoundingClientRect();
+			
+			if (!(playerRect.right < npcRect.left || 
+			      playerRect.left > npcRect.right || 
+			      playerRect.bottom < npcRect.top || 
+			      playerRect.top > npcRect.bottom)) {
+				gameOutput.innerHTML += `<p>You encountered ${npcs.find(npc => npc.location === npcLocation).name}.</p>`;
+				interactNPC();
+			}
+		}
+		
+		// NPC interaction logic
+		function interactNPC() {
+			const currentNPC = npcs.find(npc => npc.location === npcLocation);
+			if (currentNPC) {
+				gameOutput.innerHTML += `<p>${currentNPC.name}: ${currentNPC.responses[Math.floor(Math.random() * currentNPC.responses.length)]}</p>`;
+			} else {
+				gameOutput.innerHTML += `<p>There's no one here to talk to.</p>`;
+			}
 		}
 		
 		// Handle farming
-		function handleFarming() {
-			money += 1;
-			farmLevel += 0.1;
-			gameOutput.innerHTML += `<p>You worked on your farm and earned $1.</p>`;
+		function workOnFarm() {
+			if (playerLocation === 'farm') {
+				money += 1;
+				farmLevel += 0.1;
+				gameOutput.innerHTML += `<p>You worked on your farm and earned $1.</p>`;
+			} else {
+				gameOutput.innerHTML += `<p>You need to be at the farm to work.</p>`;
+			}
 		}
 		
 		// Handle shopping
-		function handleShopping() {
-			money -= 0.5;
-			shopLevel += 0.1;
-			gameOutput.innerHTML += `<p>You bought some supplies for $0.50.</p>`;
+		function shop() {
+			if (playerLocation === 'shop') {
+				money -= 0.5;
+				shopLevel += 0.1;
+				gameOutput.innerHTML += `<p>You bought some supplies for $0.50.</p>`;
+			} else {
+				gameOutput.innerHTML += `<p>You need to be at the shop to buy supplies.</p>`;
+			}
 		}
 		
 		// Handle upgrading farm
-		function handleUpgradeFarm() {
+		function upgradeFarm() {
 			if (money >= 50) {
 				money -= 50;
 				farmLevel += 1;
@@ -173,7 +208,7 @@
 		}
 		
 		// Handle upgrading shop
-		function handleUpgradeShop() {
+		function upgradeShop() {
 			if (money >= 50) {
 				money -= 50;
 				shopLevel += 1;
@@ -183,7 +218,7 @@
 			}
 		}
 		
-		// Move NPC
+		// Move NPC every 5 seconds
 		setInterval(() => {
 			if (npcLocation === 'farm') {
 				npcLocation = 'shop';
@@ -196,31 +231,15 @@
 			}
 		}, 5000);
 		
-		// Add NPC controls
-		document.addEventListener('keydown', (event) => {
-			if (event.key === 'ArrowUp') {
-				npc.style.top = `${parseInt(npc.style.top) - 10}px`;
-			}
-			if (event.key === 'ArrowDown') {
-				npc.style.top = `${parseInt(npc.style.top) + 10}px`;
-			}
-			if (event.key === 'ArrowLeft') {
-				npc.style.left = `${parseInt(npc.style.left) - 10}px`;
-			}
-			if (event.key === 'ArrowRight') {
-				npc.style.left = `${parseInt(npc.style.left) + 10}px`;
-			}
-		});
-		
-		// Update game state
+		// Update game state every second
 		setInterval(() => {
 			day += 0.01;
 			money += 0.1;
 			gameInfo.innerHTML = `
 				<p>Day: <span id="day">${day.toFixed(2)}</span></p>
 				<p>Money: <span id="money">${money.toFixed(2)}</span></p>
-				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(2)}</span></p>
-				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(2)}</span></p>
+				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(1)}</span></p>
+				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(1)}</span></p>
 			`;
 		}, 1000);
 	</script>
