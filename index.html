@@ -1,247 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Harvest Haven</title>
+	<title>Farm Life</title>
 	<style>
-		/* Add some basic styling for the landscape */
 		#landscape {
 			width: 800px;
 			height: 600px;
 			background-color: #87CEEB; /* Sky blue */
 			position: relative;
+			overflow: hidden;
 		}
-		
+		#farm, #house, #npc, #player {
+			width: 80px;
+			height: 80px;
+			position: absolute;
+			border-radius: 10px;
+		}
 		#farm {
-			width: 100px;
-			height: 100px;
 			background-color: #32CD32; /* Lime green */
-			position: absolute;
-			top: 200px;
-			left: 200px;
-			border-radius: 50%;
+			top: 400px;
+			left: 100px;
 		}
-		
-		#shop {
-			width: 100px;
-			height: 100px;
-			background-color: #6495ED; /* Cornflower blue */
-			position: absolute;
-			top: 300px;
-			left: 400px;
-			border-radius: 50%;
-		}
-		
-		#npc {
-			width: 50px;
-			height: 50px;
-			background-color: #FF0000; /* Red */
-			position: absolute;
-			top: 250px;
-			left: 250px;
-			border-radius: 50%;
-		}
-		
-		#player {
-			width: 50px;
-			height: 50px;
-			background-color: #FFFF00; /* Yellow */
-			position: absolute;
+		#house {
+			background-color: #FFD700; /* Gold */
 			top: 100px;
 			left: 100px;
-			border-radius: 50%;
+		}
+		#npc {
+			background-color: #FF4500; /* Orange red */
+			top: 250px;
+			left: 400px;
+		}
+		#player {
+			background-color: #00FFFF; /* Aqua */
+			top: 300px;
+			left: 300px;
+		}
+		#menu {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
 		}
 	</style>
 </head>
 <body>
 	<div id="landscape">
 		<div id="farm"></div>
-		<div id="shop"></div>
+		<div id="house"></div>
 		<div id="npc"></div>
 		<div id="player"></div>
 	</div>
-	<div id="game-info">
-		<p>Day: <span id="day">1</span></p>
-		<p>Money: <span id="money">100</span></p>
-		<p>Farm Level: <span id="farm-level">1</span></p>
-		<p>Shop Level: <span id="shop-level">1</span></p>
-	</div>
-	<div>
-		<button onclick="movePlayer('farm')">Go to Farm</button>
-		<button onclick="movePlayer('shop')">Go to Shop</button>
-		<button onclick="interactNPC()">Talk to NPC</button>
-		<button onclick="workOnFarm()">Work on Farm</button>
-		<button onclick="shop()">Shop</button>
-		<button onclick="upgradeFarm()">Upgrade Farm</button>
-		<button onclick="upgradeShop()">Upgrade Shop</button>
+	<div id="menu">
+		<button id="get-job-btn">Get Job at Farm</button>
+		<button id="move-home-btn">Move to House</button>
+		<button id="talk-npc-btn">Talk to NPC</button>
+		<button id="exit-btn">Exit Game</button>
 	</div>
 	<div id="game-output"></div>
-	
+
 	<script>
-		// Get game elements
-		const gameInfo = document.getElementById('game-info');
-		const gameOutput = document.getElementById('game-output');
-		const landscape = document.getElementById('landscape');
-		const farm = document.getElementById('farm');
-		const shop = document.getElementById('shop');
-		const npc = document.getElementById('npc');
+		// Get elements
 		const player = document.getElementById('player');
-		
-		// Initialize game state
-		let day = 1;
-		let money = 100;
-		let farmLevel = 1;
-		let shopLevel = 1;
-		let npcLocation = 'farm';
-		let playerLocation = 'start';
-		
-		// Define NPCs
-		const npcs = [
-			{
-				name: 'Farmer Brown',
-				responses: [
-					'Hello! Welcome to Harvest Haven.',
-					"How's your farm coming along?",
-					"I've got some fresh produce for sale."
-				],
-				location: 'farm'
-			},
-			{
-				name: 'Town Mayor',
-				responses: [
-					'Greetings! I\'m the town mayor.',
-					'We\'re glad to have you in Harvest Haven.',
-					'Let me know if you need anything.'
-				],
-				location: 'shop'
-			}
-		];
-		
-		// Add player movement controls
-		document.addEventListener('keydown', (event) => {
-			const moveSpeed = 10;
-			switch (event.key) {
+		const npc = document.getElementById('npc');
+		const farm = document.getElementById('farm');
+		const house = document.getElementById('house');
+		const gameOutput = document.getElementById('game-output');
+
+		// Initialize player position
+		let playerX = 300;
+		let playerY = 300;
+
+		// Initialize NPC movement
+		let npcX = 400;
+		let npcY = 250;
+
+		// Move player with arrow keys
+		document.addEventListener('keydown', function(event) {
+			switch(event.key) {
 				case 'ArrowUp':
-					player.style.top = `${parseInt(player.style.top) - moveSpeed}px`;
+					playerY -= 10;
 					break;
 				case 'ArrowDown':
-					player.style.top = `${parseInt(player.style.top) + moveSpeed}px`;
+					playerY += 10;
 					break;
 				case 'ArrowLeft':
-					player.style.left = `${parseInt(player.style.left) - moveSpeed}px`;
+					playerX -= 10;
 					break;
 				case 'ArrowRight':
-					player.style.left = `${parseInt(player.style.left) + moveSpeed}px`;
+					playerX += 10;
 					break;
 			}
-			checkCollisionWithNPC();
+			player.style.top = `${playerY}px`;
+			player.style.left = `${playerX}px`;
+			checkCollision();
 		});
-		
-		// Move player to specific location
-		function movePlayer(location) {
-			if (location === 'farm') {
-				player.style.top = '200px';
-				player.style.left = '200px';
-				playerLocation = 'farm';
-			} else if (location === 'shop') {
-				player.style.top = '300px';
-				player.style.left = '400px';
-				playerLocation = 'shop';
-			}
-			checkCollisionWithNPC();
-		}
-		
-		// Check if player collides with NPC
-		function checkCollisionWithNPC() {
-			const playerRect = player.getBoundingClientRect();
-			const npcRect = npc.getBoundingClientRect();
-			
-			if (!(playerRect.right < npcRect.left || 
-			      playerRect.left > npcRect.right || 
-			      playerRect.bottom < npcRect.top || 
-			      playerRect.top > npcRect.bottom)) {
-				gameOutput.innerHTML += `<p>You encountered ${npcs.find(npc => npc.location === npcLocation).name}.</p>`;
-				interactNPC();
-			}
-		}
-		
-		// NPC interaction logic
-		function interactNPC() {
-			const currentNPC = npcs.find(npc => npc.location === npcLocation);
-			if (currentNPC) {
-				gameOutput.innerHTML += `<p>${currentNPC.name}: ${currentNPC.responses[Math.floor(Math.random() * currentNPC.responses.length)]}</p>`;
-			} else {
-				gameOutput.innerHTML += `<p>There's no one here to talk to.</p>`;
-			}
-		}
-		
-		// Handle farming
-		function workOnFarm() {
-			if (playerLocation === 'farm') {
-				money += 1;
-				farmLevel += 0.1;
-				gameOutput.innerHTML += `<p>You worked on your farm and earned $1.</p>`;
-			} else {
-				gameOutput.innerHTML += `<p>You need to be at the farm to work.</p>`;
-			}
-		}
-		
-		// Handle shopping
-		function shop() {
-			if (playerLocation === 'shop') {
-				money -= 0.5;
-				shopLevel += 0.1;
-				gameOutput.innerHTML += `<p>You bought some supplies for $0.50.</p>`;
-			} else {
-				gameOutput.innerHTML += `<p>You need to be at the shop to buy supplies.</p>`;
-			}
-		}
-		
-		// Handle upgrading farm
-		function upgradeFarm() {
-			if (money >= 50) {
-				money -= 50;
-				farmLevel += 1;
-				gameOutput.innerHTML += `<p>You upgraded your farm!</p>`;
-			} else {
-				gameOutput.innerHTML += `<p>You don't have enough money to upgrade your farm.</p>`;
-			}
-		}
-		
-		// Handle upgrading shop
-		function upgradeShop() {
-			if (money >= 50) {
-				money -= 50;
-				shopLevel += 1;
-				gameOutput.innerHTML += `<p>You upgraded your shop!</p>`;
-			} else {
-				gameOutput.innerHTML += `<p>You don't have enough money to upgrade your shop.</p>`;
-			}
-		}
-		
-		// Move NPC every 5 seconds
+
+		// Move NPC randomly
 		setInterval(() => {
-			if (npcLocation === 'farm') {
-				npcLocation = 'shop';
-				npc.style.top = '300px';
-				npc.style.left = '400px';
-			} else {
-				npcLocation = 'farm';
-				npc.style.top = '200px';
-				npc.style.left = '200px';
-			}
-		}, 5000);
-		
-		// Update game state every second
-		setInterval(() => {
-			day += 0.01;
-			money += 0.1;
-			gameInfo.innerHTML = `
-				<p>Day: <span id="day">${day.toFixed(2)}</span></p>
-				<p>Money: <span id="money">${money.toFixed(2)}</span></p>
-				<p>Farm Level: <span id="farm-level">${farmLevel.toFixed(1)}</span></p>
-				<p>Shop Level: <span id="shop-level">${shopLevel.toFixed(1)}</span></p>
-			`;
+			npcX += Math.floor(Math.random() * 20 - 10);
+			npcY += Math.floor(Math.random() * 20 - 10);
+			npc.style.top = `${npcY}px`;
+			npc.style.left = `${npcX}px`;
 		}, 1000);
+
+		// Menu button actions
+		document.getElementById('get-job-btn').addEventListener('click', () => {
+			if (isNear(player, farm)) {
+				gameOutput.innerHTML = '<p>You got a job at the farm!</p>';
+			} else {
+				gameOutput.innerHTML = '<p>Move closer to the farm to get a job.</p>';
+			}
+		});
+
+		document.getElementById('move-home-btn').addEventListener('click', () => {
+			playerX = 100;
+			playerY = 100;
+			player.style.top = `${playerY}px`;
+			player.style.left = `${playerX}px`;
+			gameOutput.innerHTML = '<p>You moved to your house.</p>';
+		});
+
+		document.getElementById('talk-npc-btn').addEventListener('click', () => {
+			if (isNear(player, npc)) {
+				gameOutput.innerHTML = '<p>You talked to the NPC.</p>';
+			} else {
+				gameOutput.innerHTML = '<p>Move closer to the NPC to talk.</p>';
+			}
+		});
+
+		document.getElementById('exit-btn').addEventListener('click', () => {
+			gameOutput.innerHTML = '<p>You exited the game.</p>';
+		});
+
+		// Check collision between player and other elements
+		function checkCollision() {
+			if (isNear(player, farm)) {
+				gameOutput.innerHTML = '<p>You are near the farm.</p>';
+			}
+			if (isNear(player, house)) {
+				gameOutput.innerHTML = '<p>You are near your house.</p>';
+			}
+			if (isNear(player, npc)) {
+				gameOutput.innerHTML = '<p>You are near the NPC.</p>';
+			}
+		}
+
+		// Check if two elements are near each other
+		function isNear(el1, el2) {
+			const rect1 = el1.getBoundingClientRect();
+			const rect2 = el2.getBoundingClientRect();
+			return (
+				rect1.left < rect2.right &&
+				rect1.right > rect2.left &&
+				rect1.top < rect2.bottom &&
+				rect1.bottom > rect2.top
+			);
+		}
 	</script>
 </body>
 </html>
