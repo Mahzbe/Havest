@@ -101,6 +101,61 @@
 			font-weight: bold;
 			color: #333;
 		}
+		
+		/* Weather and season display styles */
+		#weather-season {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			width: 200px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		/* Market prices display styles */
+		#market-prices {
+			position: absolute;
+			top: 100px;
+			right: 20px;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			width: 200px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		/* Leaderboard display styles */
+		#leaderboard {
+			position: absolute;
+			top: 180px;
+			right: 20px;
+			background-color: #fff;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			width: 200px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		/* Style the leaderboard list */
+		#leaderboard-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		
+		#leaderboard-list li {
+			padding: 10px;
+			border-bottom: 1px solid #ddd;
+		}
+		
+		#leaderboard-list li:last-child {
+			border-bottom: none;
+		}
 	</style>
 </head>
 <body>
@@ -122,6 +177,7 @@
 		
 		<!-- Player character -->
 		<div id="player">Player</div>
+		
 		<!-- Farm plot -->
 		<div class="farm-plot">
 			<!-- Crop -->
@@ -148,7 +204,7 @@
 		<!-- Leaderboard display -->
 		<div id="leaderboard">
 			<p>Leaderboard:</p>
-			<p id="leaderboard-list"></p>
+			<ul id="leaderboard-list"></ul>
 		</div>
 	</div>
 	
