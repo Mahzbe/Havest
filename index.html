@@ -5,7 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest Haven</title>
     <style>
-        /* Your existing CSS */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #game-area {
+            display: flex;
+            height: 100vh;
+            background-size: cover;
+        }
+        #buttons-container {
+            width: 20%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        #info-container {
+            width: 80%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.7);
+            position: relative;
+        }
+        #alert-container {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #background-image {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .ui {
+            margin-top: 10px;
+        }
+        .ui p {
+            margin: 5px 0;
+        }
+        .error {
+            color: red;
+        }
+        /* Your additional CSS for buttons and layout */
     </style>
 </head>
 <body>
@@ -130,8 +179,8 @@
                 document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
                 document.getElementById('background-image').src = 'crop.png'; // Show crop background
                 setTimeout(function() {
-                    document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 minutes
-                }, 600000); // 10 minutes
+                    document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
+                }, 10000); // 10 seconds
             } else {
                 showAlert("You don't have any crops to harvest!", true); // Show error alert
             }
@@ -228,6 +277,14 @@
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
             showAlert("You got paid $100 for your work!");
         }
+
+        // Add event listeners to buttons
+        document.getElementById('find-job').addEventListener('click', findJob);
+        document.getElementById('work').addEventListener('click', work);
+        document.getElementById('go-pub').addEventListener('click', goPub);
+        document.getElementById('plant-crop').addEventListener('click', plantCrop);
+        document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
+        document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
     </script>
 </body>
 </html>
