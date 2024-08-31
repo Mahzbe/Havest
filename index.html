@@ -145,6 +145,7 @@
         let weather = "sunny";
         let season = "spring";
         let leaderboard = [];
+        let cropPlanted = false;
 
         // Find a job
         function findJob() {
@@ -179,7 +180,7 @@
                 }, 300000); // Job lasts 5 minutes
                 // Automatic harvesting after 3 minutes
                 setTimeout(function() {
-                    if (document.querySelector('.crop').style.display === 'block') {
+                    if (cropPlanted) {
                         harvestCrop();
                     }
                 }, 180000); // Harvest after 3 minutes
@@ -213,6 +214,7 @@
             document.getElementById('background-image').src = 'crop.png'; // Show crop background
             showAlert("You planted a crop!");
             document.getElementById('crop-timer').classList.add('active'); // Start crop timer
+            cropPlanted = true;
             setTimeout(function() {
                 document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
                 document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
@@ -221,9 +223,9 @@
 
         // Harvest crop
         function harvestCrop() {
-            if (document.querySelector('.crop').style.display === 'block') {
+            if (cropPlanted) {
                 showAlert("Your crop has been harvested!");
-                document.querySelector('.crop').style.display = 'none';
+                cropPlanted = false;
                 bankBalance += (200 + (toolLevel - 1) * 30); // Increase earning based on tool level
                 document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
                 document.getElementById('background-image').src = 'crop.png'; // Show crop background
