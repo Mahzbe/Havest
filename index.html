@@ -8,22 +8,47 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
         }
 
         #game-area {
             display: flex;
+            max-width: 1200px;
+            width: 100%;
+            height: 80%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        #buttons-container {
+            display: flex;
             flex-direction: column;
-            align-items: center;
+            width: 200px;
             padding: 20px;
             box-sizing: border-box;
-            max-width: 100%;
-            height: 100vh;
-            overflow: auto;
+            border-right: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        #buttons-container button {
+            margin: 10px 0;
+        }
+
+        #info-container {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .ui {
             margin-top: 20px;
-            text-align: center;
+            text-align: left;
         }
 
         .ui p {
@@ -50,7 +75,7 @@
 
         button {
             padding: 10px 20px;
-            margin: 5px;
+            margin: 5px 0;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
@@ -65,8 +90,18 @@
         }
 
         @media (max-width: 600px) {
-            .ui p {
-                font-size: 14px;
+            #buttons-container {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ccc;
+            }
+
+            #game-area {
+                flex-direction: column;
+            }
+
+            .ui {
+                text-align: center;
             }
 
             button {
@@ -78,23 +113,27 @@
 </head>
 <body>
     <div id="game-area">
-        <div id="alert-container">
-            <p id="alert-message"></p>
+        <div id="buttons-container">
+            <button id="find-job">Find a Job</button>
+            <button id="work">Work</button>
+            <button id="go-pub">Go to Pub</button>
+            <button id="plant-crop">Plant Crop</button>
+            <button id="harvest-crop">Harvest Crop</button>
+            <button id="upgrade-tools">Upgrade Tools</button>
         </div>
-        <button id="find-job">Find a Job</button>
-        <button id="work">Work</button>
-        <button id="go-pub">Go to Pub</button>
-        <button id="plant-crop">Plant Crop</button>
-        <button id="harvest-crop">Harvest Crop</button>
-        <button id="upgrade-tools">Upgrade Tools</button>
-        <div class="crop">Crop</div>
-        <div class="ui">
-            <p id="bank-balance">Bank Balance: $500</p>
-            <p id="tool-level">Tool Level: 1</p>
-            <p id="weather">Weather: sunny</p>
-            <p id="season">Season: spring</p>
-            <p id="crop-prices"></p>
-            <p id="leaderboard-list"></p>
+        <div id="info-container">
+            <div id="alert-container">
+                <p id="alert-message"></p>
+            </div>
+            <div class="crop">Crop</div>
+            <div class="ui">
+                <p id="bank-balance">Bank Balance: $500</p>
+                <p id="tool-level">Tool Level: 1</p>
+                <p id="weather">Weather: sunny</p>
+                <p id="season">Season: spring</p>
+                <p id="crop-prices"></p>
+                <p id="leaderboard-list"></p>
+            </div>
         </div>
     </div>
 
@@ -250,7 +289,7 @@
                 // Stop any current activity (e.g., drinking at the pub)
                 goHome();
                 // Simulate work button click
-                work();
+                document.getElementById('work').click();
                 // Pay player after work
                 payPlayer();
             } else {
@@ -265,10 +304,10 @@
             showAlert("You got paid $100 for your work!");
         }
 
-        // Attach event listeners to buttons
+        // Event listeners for buttons
         document.getElementById('find-job').addEventListener('click', findJob);
         document.getElementById('work').addEventListener('click', work);
-        document.getElementById('go-pub').addEventListener('click', goPub);
+        document.getElementById('go-pub').addEventListener('click', jakesInteraction);
         document.getElementById('plant-crop').addEventListener('click', plantCrop);
         document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
         document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
