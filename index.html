@@ -233,6 +233,11 @@
                         harvestCrop();
                     }
                 }, 180000);
+                setInterval(function() {
+                    bankBalance += 50;
+                    showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
+                    updateUI();
+                }, 60000);
             } else {
                 showAlert("You need to find a job first!", true);
             }
@@ -249,12 +254,10 @@
                 <button id="respond-not-ok">Not OK</button>
                 <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
                 <button id="lend-money">Lend $50</button>
-                <button id="deny-money">Deny</button>
-                <p>Jakes: "Just checking in. How’s the farm work going?"</p>
+                <button id="deny-money">Don't Lend</button>
+                <p>Jakes: "Check out the farm for any issues."</p>
                 <button id="check-farm">Check Farm</button>
-                <button id="respond-check-farm">Respond</button>
             `;
-            showAlert("Jakes has messaged you. Check the message space.");
             manageJakesResponses();
         }
 
@@ -285,9 +288,6 @@
                 showAlert("Farm is looking good!");
                 document.getElementById('jakes-messages').innerHTML = "";
             });
-            document.getElementById('respond-check-farm').addEventListener('click', () => {
-                document.getElementById('jakes-messages').innerHTML = "";
-            });
         }
 
         function plantCrop() {
@@ -303,6 +303,7 @@
         function harvestCrop() {
             if (cropPlanted) {
                 document.getElementById('background-image').src = 'crop.png';
+                bankBalance += 20; // Add earnings from harvesting
                 showAlert("You've harvested the crop. It will return to home screen in 10 seconds.");
                 setTimeout(() => {
                     document.getElementById('background-image').src = 'home.png';
