@@ -58,15 +58,15 @@
         #alert-container {
             display: none;
             position: absolute;
-            top: 50%; /* Changed to center the message */
-            left: 50%; /* Changed to center the message */
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             padding: 10px;
             border-radius: 5px;
             font-size: 16px;
-            text-align: center; /* Center text */
+            text-align: center;
         }
         #alert-container.error {
             color: red;
@@ -102,6 +102,24 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        #pub-buttons {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #pub-buttons button {
+            width: 120px;
+            margin: 5px 0;
+            font-size: 16px;
+            color: #fff;
+            background-color: #555;
+        }
+        #pub-buttons button:hover {
+            background-color: #777;
         }
     </style>
 </head>
@@ -187,6 +205,7 @@
             document.getElementById('background-image').src = 'pub.png';
             showAlert("You're at the pub!");
             playPubMusic();
+            document.getElementById('pub-buttons').style.display = 'block';
         }
 
         function playPubMusic() {
@@ -222,43 +241,87 @@
             const messageSpace = document.getElementById('jakes-messages');
             messageSpace.innerHTML = `
                 <p>Jakes: "Hey, want to grab a drink at the pub?"</p>
+                <button id="accept-pub">Yes</button>
+                <button id="reject-pub">No</button>
                 <p>Jakes: "How are you doing? Everything okay?"</p>
+                <button id="respond-ok">OK</button>
+                <button id="respond-not-ok">Not OK</button>
                 <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
+                <button id="lend-money">Lend $50</button>
+                <button id="deny-money">Deny</button>
                 <p>Jakes: "Just checking in. How’s the farm work going?"</p>
+                <button id="check-farm">Check Farm</button>
+                <button id="respond-check-farm">Respond</button>
             `;
             showAlert("Jakes has messaged you. Check the message space!");
+            setupJakesResponses();
+        }
+
+        function setupJakesResponses() {
+            document.getElementById('accept-pub').addEventListener('click', () => {
+                goPub();
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('reject-pub').addEventListener('click', () => {
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('respond-ok').addEventListener('click', () => {
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('respond-not-ok').addEventListener('click', () => {
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('lend-money').addEventListener('click', () => {
+                bankBalance -= 50;
+                showAlert("You've lent $50 to Jakes.");
+                document.getElementById('jakes-messages').innerHTML = "";
+                updateUI();
+            });
+            document.getElementById('deny-money').addEventListener('click', () => {
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('check-farm').addEventListener('click', () => {
+                showAlert("Farm is looking good!");
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
+            document.getElementById('respond-check-farm').addEventListener('click', () => {
+                document.getElementById('jakes-messages').innerHTML = "";
+            });
         }
 
         function plantCrop() {
-            cropPlanted = true;
             document.getElementById('background-image').src = 'crop.png';
-            document.getElementById('crop-timer').classList.add('active');
-            showAlert("Crop has been planted!");
-            setTimeout(function() {
+            cropPlanted = true;
+            showAlert("You've planted the crop. It will be harvested in 3 minutes.");
+            setTimeout(() => {
                 document.getElementById('background-image').src = 'home.png';
                 showAlert("You've returned home.");
-            }, 10000); // Return to home after 10 seconds
+            }, 10000);
         }
 
         function harvestCrop() {
             if (cropPlanted) {
-                const payment = getCropPayment();
-                bankBalance += payment;
-                cropPlanted = false;
-                document.getElementById('crop-timer').classList.remove('active');
-                showAlert(`Crop harvested! You've earned $${payment}.`);
-                updateUI();
-                setTimeout(function() {
+                document.getElementById('background-image').src = 'crop.png';
+                showAlert("You've harvested the crop. It will return to home screen in 10 seconds.");
+                setTimeout(() => {
                     document.getElementById('background-image').src = 'home.png';
                     showAlert("You've returned home.");
-                }, 10000); // Return to home after 10 seconds
+                }, 10000);
+                cropPlanted = false;
             } else {
                 showAlert("No crop to harvest!", true);
             }
         }
 
-        function getCropPayment() {
-            return 50;
+        function upgradeTools() {
+            if (bankBalance >= 100) {
+                toolLevel++;
+                bankBalance -= 100;
+                showAlert(`Tools upgraded to level ${toolLevel}.`);
+            } else {
+                showAlert("Not enough funds to upgrade tools!", true);
+            }
+            updateUI();
         }
 
         function updateUI() {
@@ -287,6 +350,8 @@
         document.getElementById('go-pub').addEventListener('click', goPub);
         document.getElementById('plant-crop').addEventListener('click', plantCrop);
         document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
+        document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
+        document.getElementById('message-jakes').addEventListener('click', messageJakes);
 
         // Initial UI update
         updateUI();
