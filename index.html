@@ -112,6 +112,7 @@
             <button id="plant-crop">Plant Crop</button>
             <button id="harvest-crop">Harvest Crop</button>
             <button id="upgrade-tools">Upgrade Tools</button>
+            <button id="toggle-music">Play Music</button> <!-- Added Play/Pause button -->
         </div>
         <div id="info-container">
             <div id="alert-container">
@@ -148,6 +149,7 @@
         let leaderboard = [];
         let cropPlanted = false;
         let musicTrack = 1;
+        let isPlaying = true;
 
         // Play background music
         function playBackgroundMusic() {
@@ -161,6 +163,19 @@
             musicTrack = (musicTrack === 1) ? 2 : 1;
             music.src = (musicTrack === 1) ? 'background-music1.mp3' : 'background-music2.mp3';
             music.play();
+        }
+
+        // Pause or play music
+        function toggleMusic() {
+            const music = document.getElementById('background-music');
+            if (isPlaying) {
+                music.pause();
+                document.getElementById('toggle-music').innerText = 'Play Music';
+            } else {
+                music.play();
+                document.getElementById('toggle-music').innerText = 'Pause Music';
+            }
+            isPlaying = !isPlaying;
         }
 
         // Find a job
@@ -240,16 +255,8 @@
         // Harvest crop
         function harvestCrop() {
             if (cropPlanted) {
-                showAlert("Your crop has been harvested!");
+                showAlert("You harvested the crop!");
                 cropPlanted = false;
-                bankBalance += (200 + (toolLevel - 1) * 30); // Increase earning based on tool level
-                document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                document.getElementById('background-image').src = 'crop.png'; // Show crop background
-                document.getElementById('crop-timer').classList.add('active'); // Start crop timer
-                setTimeout(function() {
-                    document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
-                    document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
-                }, 10000); // 10 seconds
             } else {
                 showAlert("You don't have any crops to harvest!", true); // Show error alert
             }
@@ -355,11 +362,7 @@
         document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
         
         // Add event listener to switch music
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'm') {
-                switchBackgroundMusic(); // Switch music when 'm' is pressed
-            }
-        });
+        document.getElementById('toggle-music').addEventListener('click', toggleMusic);
     </script>
 </body>
 </html>
