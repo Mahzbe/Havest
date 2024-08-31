@@ -5,16 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest Haven</title>
     <style>
-        /* Add some basic styles */
-        #game-area {
-            padding: 20px;
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
+
+        #game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            max-width: 100%;
+            height: 100vh;
+            overflow: auto;
+        }
+
         .ui {
             margin-top: 20px;
+            text-align: center;
         }
+
         .ui p {
             margin: 5px 0;
         }
+
         #alert-container {
             display: none;
             background-color: #f8d7da;
@@ -22,9 +37,42 @@
             padding: 10px;
             border: 1px solid #f5c6cb;
             border-radius: 4px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
         }
+
         .crop {
             display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            .ui p {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
         }
     </style>
 </head>
