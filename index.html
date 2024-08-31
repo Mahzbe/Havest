@@ -110,6 +110,7 @@
             background: rgba(0, 0, 0, 0.7);
             padding: 10px;
             border-radius: 5px;
+            display: none;
         }
         #pub-buttons button {
             width: 120px;
@@ -253,11 +254,11 @@
                 <button id="check-farm">Check Farm</button>
                 <button id="respond-check-farm">Respond</button>
             `;
-            showAlert("Jakes has messaged you. Check the message space!");
-            setupJakesResponses();
+            showAlert("Jakes has messaged you. Check the message space.");
+            manageJakesResponses();
         }
 
-        function setupJakesResponses() {
+        function manageJakesResponses() {
             document.getElementById('accept-pub').addEventListener('click', () => {
                 goPub();
                 document.getElementById('jakes-messages').innerHTML = "";
@@ -352,6 +353,34 @@
         document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
         document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
         document.getElementById('message-jakes').addEventListener('click', messageJakes);
+
+        document.getElementById('pub-buttons').innerHTML = `
+            <button id="return-home-pub">Return Home</button>
+            <button id="buy-440-brew">$2 for 440 Brew</button>
+            <button id="buy-brandy">$5 for Brandy</button>
+            <button id="play-pub-effects">Play Pub Effects</button>
+        `;
+
+        document.getElementById('return-home-pub').addEventListener('click', () => {
+            document.getElementById('background-image').src = 'home.png';
+            document.getElementById('pub-buttons').style.display = 'none';
+            showAlert("You've returned home.");
+            stopPubMusic();
+        });
+
+        document.getElementById('buy-440-brew').addEventListener('click', () => {
+            bankBalance -= 2;
+            showAlert("You've bought a 440 Brew.");
+        });
+
+        document.getElementById('buy-brandy').addEventListener('click', () => {
+            bankBalance -= 5;
+            showAlert("You've bought a Brandy.");
+        });
+
+        document.getElementById('play-pub-effects').addEventListener('click', () => {
+            playPubMusic();
+        });
 
         // Initial UI update
         updateUI();
