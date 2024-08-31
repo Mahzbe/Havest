@@ -6,100 +6,94 @@
     <title>Harvest Haven</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             margin: 0;
-            font-family: 'Arial', sans-serif;
+            padding: 0;
+            background-color: #f0f0f0;
         }
         #game-area {
             display: flex;
-            height: 100vh;
-            background-size: cover;
-            position: relative;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
         #buttons-container {
-            width: 20%;
-            padding: 10px;
-            box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        #buttons-container button {
-            width: 80%;
-            padding: 10px;
+        button {
             margin: 5px;
+            padding: 10px 20px;
             font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #333;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-        #buttons-container button:hover {
-            background-color: #555;
+        button:hover {
+            background-color: #45a049;
         }
         #info-container {
-            width: 80%;
-            padding: 10px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        #background-image {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            object-fit: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
         }
         #alert-container {
             display: none;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
             border-radius: 5px;
-            font-size: 16px;
+            margin-bottom: 20px;
         }
         #alert-container.error {
-            color: red;
+            background-color: #f44336;
+        }
+        #alert-container p {
+            margin: 0;
+        }
+        #background-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
         }
         .ui {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
         }
         .ui p {
             margin: 5px 0;
-            font-size: 16px;
         }
         .timer-container {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
             width: 100px;
             height: 100px;
+            border: 5px solid #4CAF50;
             border-radius: 50%;
-            border: 8px solid #ddd;
-            border-top: 8px solid #3498db;
-            animation: spin 30s linear infinite;
-            display: none;
+            position: relative;
+            margin-top: 20px;
         }
-        .timer-container.active {
+        .timer-container::after {
+            content: '';
             display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: #4CAF50;
+            animation: spin 30s linear infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -131,6 +125,14 @@
     </div>
 
     <audio id="moow-sound" src="moow.mp3"></audio>
+    <audio id="background-music1" loop>
+        <source src="background-music1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="background-music2" loop>
+        <source src="background-music2.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         // Game variables
@@ -145,7 +147,25 @@
         let weather = "sunny";
         let season = "spring";
         let leaderboard = [];
-        let cropPlanted = false;
+
+        // Play background music
+        function playBackgroundMusic() {
+            const music1 = document.getElementById('background-music1');
+            const music2 = document.getElementById('background-music2');
+            music1.play();
+            music2.play();
+
+            // Switch between songs every 30 seconds
+            setInterval(() => {
+                if (music1.paused) {
+                    music1.play();
+                    music2.pause();
+                } else {
+                    music2.play();
+                    music1.pause();
+                }
+            }, 30000); // 30 seconds
+        }
 
         // Find a job
         function findJob() {
@@ -165,14 +185,13 @@
 
         // Go to pub
         function goPub() {
-            document.getElementById('background-image').src = 'pub.png'; // Change background image
+            document.getElementById('background-image').src = 'pub.png';
             showAlert("You're at the pub!");
         }
 
         // Work
         function work() {
             if (job) {
-                document.getElementById('moow-sound').play(); // Play sound effect
                 showAlert(`You're working as a ${job}!`);
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
@@ -180,12 +199,12 @@
                 }, 300000); // Job lasts 5 minutes
                 // Automatic harvesting after 3 minutes
                 setTimeout(function() {
-                    if (cropPlanted) {
+                    if (document.querySelector('.crop').style.display === 'block') {
                         harvestCrop();
                     }
                 }, 180000); // Harvest after 3 minutes
             } else {
-                showAlert("You need to find a job first!", true); // Show error alert
+                showAlert("You need to find a job first!");
             }
         }
 
@@ -205,37 +224,29 @@
 
         // Go home
         function goHome() {
-            document.getElementById('background-image').src = 'home.png'; // Return to home background
+            document.getElementById('background-image').src = 'home.png';
             showAlert("You took Jakes home.");
         }
 
         // Plant crop
         function plantCrop() {
-            document.getElementById('background-image').src = 'crop.png'; // Show crop background
             showAlert("You planted a crop!");
-            document.getElementById('crop-timer').classList.add('active'); // Start crop timer
-            cropPlanted = true;
-            setTimeout(function() {
-                document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
-                document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
-            }, 10000); // 10 seconds
+            document.querySelector('.crop').style.display = 'block';
         }
 
         // Harvest crop
         function harvestCrop() {
-            if (cropPlanted) {
+            if (document.querySelector('.crop').style.display === 'block') {
                 showAlert("Your crop has been harvested!");
-                cropPlanted = false;
-                bankBalance += (200 + (toolLevel - 1) * 30); // Increase earning based on tool level
+                document.getElementById('background-image').src = 'crop.png';
+                setTimeout(() => {
+                    document.getElementById('background-image').src = 'home.png';
+                }, 10000); // Show crop image for 10 seconds
+                document.querySelector('.crop').style.display = 'none';
+                bankBalance += 200;
                 document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                document.getElementById('background-image').src = 'crop.png'; // Show crop background
-                document.getElementById('crop-timer').classList.add('active'); // Start crop timer
-                setTimeout(function() {
-                    document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
-                    document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
-                }, 10000); // 10 seconds
             } else {
-                showAlert("You don't have any crops to harvest!", true); // Show error alert
+                showAlert("You don't have any crops to harvest!");
             }
         }
 
@@ -299,6 +310,7 @@
 
         // Initialize game
         function initGame() {
+            playBackgroundMusic(); // Play background music
             updateWeatherSeason();
             updateMarketPrices();
             updateLeaderboard();
@@ -318,7 +330,7 @@
                 // Pay player after work
                 payPlayer();
             } else {
-                showAlert("You need to find a job first!", true); // Show error alert
+                showAlert("You need to find a job first!");
             }
         }, 600000); // 10 minutes in milliseconds
 
@@ -328,14 +340,6 @@
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
             showAlert("You got paid $100 for your work!");
         }
-
-        // Add event listeners to buttons
-        document.getElementById('find-job').addEventListener('click', findJob);
-        document.getElementById('work').addEventListener('click', work);
-        document.getElementById('go-pub').addEventListener('click', goPub);
-        document.getElementById('plant-crop').addEventListener('click', plantCrop);
-        document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
-        document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
     </script>
 </body>
 </html>
