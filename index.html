@@ -100,8 +100,12 @@
             display: block;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
         #pub-buttons {
             position: absolute;
@@ -140,6 +144,7 @@
             <div id="alert-container">
                 <p id="alert-message"></p>
             </div>
+            <img id="background-image" src="home.png"
             <img id="background-image" src="home.png" alt="Background">
             <div class="ui">
                 <p id="bank-balance">Bank Balance: $500</p>
@@ -151,13 +156,15 @@
                 <div id="jakes-messages"></div>
             </div>
             <div class="timer-container" id="crop-timer"></div>
+            <div id="pub-buttons">
+                <button id="accept-pub">Yes</button>
+                <button id="reject-pub">No</button>
+            </div>
         </div>
     </div>
-
     <audio id="background-music" src="background-music1.mp3" loop></audio>
     <audio id="moow-sound" src="moow.mp3"></audio>
     <audio id="pub-music" src="pub.mp3" loop></audio>
-
     <script>
         let job = null;
         let bankBalance = 500;
@@ -170,7 +177,7 @@
         let musicTrack = 1;
         let isPlaying = true;
         let jakesMessageTimer;
-        let paymentInterval; // Variable to store the interval ID for payments
+        let paymentInterval;
 
         function playBackgroundMusic() {
             const music = document.getElementById('background-music');
@@ -224,17 +231,13 @@
             if (job) {
                 document.getElementById('moow-sound').play();
                 showAlert(`You're working as a ${job}!`);
-                
-                // Start daily payments
-                if (!paymentInterval) { // Only start the interval if it's not already running
+                if (!paymentInterval) {
                     paymentInterval = setInterval(function() {
                         bankBalance += 50;
                         showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
                         updateUI();
                     }, 60000); // 1 minute interval
                 }
-
-                // Stop payment and show job end alert after 5 minutes
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
                     job = null;
@@ -249,7 +252,7 @@
 
         function messageJakes() {
             const messageSpace = document.getElementById('jakes-messages');
-            messageSpace.innerHTML = `
+            messageSpace.innerHTML = ` 
                 <p>Jakes: "Hey, want to grab a drink at the pub?"</p>
                 <button id="accept-pub">Yes</button>
                 <button id="reject-pub">No</button>
