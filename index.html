@@ -224,6 +224,7 @@
             if (job) {
                 document.getElementById('moow-sound').play();
                 showAlert(`You're working as a ${job}!`);
+                
                 // Start daily payments
                 if (!paymentInterval) { // Only start the interval if it's not already running
                     paymentInterval = setInterval(function() {
@@ -232,6 +233,8 @@
                         updateUI();
                     }, 60000); // 1 minute interval
                 }
+
+                // Stop payment and show job end alert after 5 minutes
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
                     job = null;
@@ -253,8 +256,8 @@
                 <p>Jakes: "How are you doing? Everything okay?"</p>
                 <button id="respond-ok">OK</button>
                 <button id="respond-not-ok">Not OK</button>
-                <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
-                <button id="lend-money">Lend $50</button>
+                <p>Jakes: "I need to borrow some money. Can you lend me $50?"</p>
+                <button id="lend-money">Lend Money</button>
                 <button id="reject-money">Reject</button>
             `;
             document.getElementById('accept-pub').onclick = function() {
