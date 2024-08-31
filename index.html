@@ -252,98 +252,80 @@
                 <p>Jakes: "How are you doing? Everything okay?"</p>
                 <button id="respond-ok">OK</button>
                 <button id="respond-not-ok">Not OK</button>
-                <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
-                <button id="lend-money">Lend $50</button>
-                <button id="deny-money">Don't Lend</button>
-                <p>Jakes: "Check out the farm for any issues."</p>
-                <button id="check-farm">Check Farm</button>
+                <p>Jakes: "I need to borrow $50. Can you help me out?"</p>
+                <button id="lend-money">Yes</button>
+                <button id="no-lend">No</button>
             `;
-            manageJakesResponses();
-        }
-
-        function manageJakesResponses() {
-            document.getElementById('accept-pub').addEventListener('click', () => {
-                goPub();
-                document.getElementById('jakes-messages').innerHTML = "";
-            });
+            document.getElementById('accept-pub').addEventListener('click', goPub);
             document.getElementById('reject-pub').addEventListener('click', () => {
-                document.getElementById('jakes-messages').innerHTML = "";
+                showAlert("You declined Jakes' offer.");
+                clearJakesMessages();
             });
             document.getElementById('respond-ok').addEventListener('click', () => {
-                document.getElementById('jakes-messages').innerHTML = "";
+                showAlert("Jakes is glad you're OK.");
+                clearJakesMessages();
             });
             document.getElementById('respond-not-ok').addEventListener('click', () => {
-                document.getElementById('jakes-messages').innerHTML = "";
+                showAlert("Jakes is sorry to hear that. Take care.");
+                clearJakesMessages();
             });
             document.getElementById('lend-money').addEventListener('click', () => {
                 bankBalance -= 50;
-                showAlert("You've lent $50 to Jakes.");
-                document.getElementById('jakes-messages').innerHTML = "";
-                updateUI();
+                showAlert("You lent Jakes $50. New Balance: $" + bankBalance);
+                clearJakesMessages();
             });
-            document.getElementById('deny-money').addEventListener('click', () => {
-                document.getElementById('jakes-messages').innerHTML = "";
-            });
-            document.getElementById('check-farm').addEventListener('click', () => {
-                showAlert("Farm is looking good!");
-                document.getElementById('jakes-messages').innerHTML = "";
+            document.getElementById('no-lend').addEventListener('click', () => {
+                showAlert("You declined to lend money.");
+                clearJakesMessages();
             });
         }
 
+        function clearJakesMessages() {
+            const messageSpace = document.getElementById('jakes-messages');
+            messageSpace.innerHTML = '';
+        }
+
         function plantCrop() {
-            document.getElementById('background-image').src = 'crop.png';
             cropPlanted = true;
-            showAlert("You've planted the crop. It will be harvested in 3 minutes.");
-            setTimeout(() => {
+            document.getElementById('background-image').src = 'crop.png';
+            showAlert("You planted a crop!");
+            setTimeout(function() {
                 document.getElementById('background-image').src = 'home.png';
-                showAlert("You've returned home.");
+                cropPlanted = false;
+                showAlert("Returned home.");
             }, 10000);
         }
 
         function harvestCrop() {
-            if (cropPlanted) {
-                document.getElementById('background-image').src = 'crop.png';
-                bankBalance += 20; // Add earnings from harvesting
-                showAlert("You've harvested the crop. It will return to home screen in 10 seconds.");
-                setTimeout(() => {
-                    document.getElementById('background-image').src = 'home.png';
-                    showAlert("You've returned home.");
-                }, 10000);
-                cropPlanted = false;
-            } else {
-                showAlert("No crop to harvest!", true);
-            }
+            document.getElementById('background-image').src = 'crop.png';
+            showAlert("You harvested a crop!");
+            setTimeout(function() {
+                document.getElementById('background-image').src = 'home.png';
+                showAlert("Returned home.");
+            }, 10000);
         }
 
         function upgradeTools() {
-            if (bankBalance >= 100) {
-                toolLevel++;
-                bankBalance -= 100;
-                showAlert(`Tools upgraded to level ${toolLevel}.`);
-            } else {
-                showAlert("Not enough funds to upgrade tools!", true);
-            }
+            toolLevel++;
+            showAlert(`Tools upgraded to level ${toolLevel}!`);
             updateUI();
         }
 
         function updateUI() {
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
             document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
-            document.getElementById('weather').innerText = `Weather: ${weather}`;
-            document.getElementById('season').innerText = `Season: ${season}`;
-            document.getElementById('crop-prices').innerText = `Crop Prices: ${JSON.stringify(cropPrices)}`;
-            document.getElementById('leaderboard-list').innerText = `Leaderboard: ${leaderboard.join(", ")}`;
+            document.getElementById('crop-prices').innerText = `Crop Prices: Wheat - $${cropPrices.wheat}, Corn - $${cropPrices.corn}, Soybeans - $${cropPrices.soybeans}`;
+            document.getElementById('leaderboard-list').innerText = `Leaderboard: ${leaderboard.join(', ')}`;
         }
 
-        function showAlert(message, error = false) {
+        function showAlert(message, isError = false) {
             const alertContainer = document.getElementById('alert-container');
-            const alertMessage = document.getElementById('alert-message');
-            alertMessage.innerText = message;
             alertContainer.style.display = 'block';
-            alertContainer.className = error ? 'error' : '';
+            alertContainer.className = isError ? 'error' : '';
+            document.getElementById('alert-message').innerText = message;
             setTimeout(() => {
                 alertContainer.style.display = 'none';
-            }, 4000);
+            }, 5000);
         }
 
         document.getElementById('toggle-music').addEventListener('click', toggleMusic);
@@ -354,37 +336,6 @@
         document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
         document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
         document.getElementById('message-jakes').addEventListener('click', messageJakes);
-
-        document.getElementById('pub-buttons').innerHTML = `
-            <button id="return-home-pub">Return Home</button>
-            <button id="buy-440-brew">$2 for 440 Brew</button>
-            <button id="buy-brandy">$5 for Brandy</button>
-            <button id="play-pub-effects">Play Pub Effects</button>
-        `;
-
-        document.getElementById('return-home-pub').addEventListener('click', () => {
-            document.getElementById('background-image').src = 'home.png';
-            document.getElementById('pub-buttons').style.display = 'none';
-            showAlert("You've returned home.");
-            stopPubMusic();
-        });
-
-        document.getElementById('buy-440-brew').addEventListener('click', () => {
-            bankBalance -= 2;
-            showAlert("You've bought a 440 Brew.");
-        });
-
-        document.getElementById('buy-brandy').addEventListener('click', () => {
-            bankBalance -= 5;
-            showAlert("You've bought a Brandy.");
-        });
-
-        document.getElementById('play-pub-effects').addEventListener('click', () => {
-            playPubMusic();
-        });
-
-        // Initial UI update
-        updateUI();
     </script>
 </body>
 </html>
