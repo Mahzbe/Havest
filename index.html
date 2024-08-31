@@ -163,14 +163,10 @@
         let bankBalance = 500;
         let toolLevel = 1;
         let cropPrices = { "wheat": 10, "corn": 15, "soybeans": 20 };
-        let weather = "sunny";
-        let season = "spring";
-        let leaderboard = [];
         let cropPlanted = false;
         let musicTrack = 1;
         let isPlaying = true;
-        let jakesMessageTimer;
-        let paymentInterval; // Variable to store the interval ID for payments
+        let paymentInterval = null;
 
         function playBackgroundMusic() {
             const music = document.getElementById('background-music');
@@ -195,7 +191,7 @@
             document.getElementById('find-job').style.display = 'none';
             setTimeout(function() {
                 document.getElementById('find-job').style.display = 'block';
-            }, 300000); // Button reappears after 5 minutes
+            }, 300000);
         }
 
         function getJob() {
@@ -224,24 +220,23 @@
             if (job) {
                 document.getElementById('moow-sound').play();
                 showAlert(`You're working as a ${job}!`);
-                
-                // Start daily payments
-                if (!paymentInterval) { // Only start the interval if it's not already running
-                    paymentInterval = setInterval(function() {
-                        bankBalance += 50;
-                        showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
-                        updateUI();
-                    }, 60000); // 1 minute interval
-                }
-
-                // Stop payment and show job end alert after 5 minutes
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
                     job = null;
-                    clearInterval(paymentInterval); // Stop payments when job ends
-                    paymentInterval = null; // Reset the interval variable
                     document.getElementById('find-job').style.display = 'block';
-                }, 300000); // Job duration
+                }, 300000);
+                
+                // Clear existing interval if any
+                if (paymentInterval) {
+                    clearInterval(paymentInterval);
+                }
+                
+                // Start daily payments
+                paymentInterval = setInterval(function() {
+                    bankBalance += 50;
+                    showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
+                    updateUI();
+                }, 60000);
             } else {
                 showAlert("You need to find a job first!", true);
             }
@@ -260,25 +255,33 @@
                 <button id="lend-money">Lend Money</button>
                 <button id="reject-money">Reject</button>
             `;
+            manageJakesActions();
+        }
+
+        function manageJakesActions() {
             document.getElementById('accept-pub').onclick = function() {
                 goPub();
                 clearJakesMessages();
             };
             document.getElementById('reject-pub').onclick = function() {
-                showAlert("You declined the pub invitation.");
                 clearJakesMessages();
             };
             document.getElementById('respond-ok').onclick = function() {
-                showAlert("You responded OK.");
+                showAlert("Jakes: Thanks for the update!");
                 clearJakesMessages();
             };
             document.getElementById('respond-not-ok').onclick = function() {
-                showAlert("You responded Not OK.");
+                showAlert("Jakes: Sorry to hear that. Hope things get better.");
                 clearJakesMessages();
             };
             document.getElementById('lend-money').onclick = function() {
-                bankBalance -= 50;
-                showAlert(`You lent $50 to Jakes. Bank Balance: $${bankBalance}`);
+                if (bankBalance >= 50) {
+                    bankBalance -= 50;
+                    showAlert("You lent Jakes $50.");
+                } else {
+                    showAlert("You don't have enough money to lend.");
+                }
+                updateUI();
                 clearJakesMessages();
             };
             document.getElementById('reject-money').onclick = function() {
@@ -291,46 +294,70 @@
             document.getElementById('jakes-messages').innerHTML = '';
         }
 
-        function showAlert(message, isError) {
+        function plantCrop() {
+            if (cropPlanted) {
+                showAlert("Crop is already planted!");
+                return;
+            }
+            cropPlanted = true;
+            document.getElementById('background-image').src = 'crop.png';
+            showAlert("Crop planted!");
+            startCropTimer();
+        }
+
+        function startCropTimer() {
+            const timer = document.getElementById('crop-timer');
+            timer.classList.add('active');
+            setTimeout(function() {
+                cropPlanted = false;
+                document.getElementById('background-image').src = 'home.png';
+                showAlert("Crop is ready for harvest.");
+                timer.classList.remove('active');
+            }, 60000);
+        }
+
+        function harvestCrop() {
+            if (!cropPlanted) {
+                showAlert("No crop to harvest!");
+                return;
+            }
+            cropPlanted = false;
+            document.getElementById('background-image').src = 'home.png';
+            showAlert("Crop harvested!");
+        }
+
+        function upgradeTools() {
+            if (bankBalance < 100) {
+                showAlert("Not enough money to upgrade tools!");
+                return;
+            }
+            bankBalance -= 100;
+            toolLevel++;
+            showAlert(`Tools upgraded to level ${toolLevel}!`);
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
+            document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
+        }
+
+        function showAlert(message, isError = false) {
             const alertContainer = document.getElementById('alert-container');
-            const alertMessage = document.getElementById('alert-message');
             alertContainer.classList.toggle('error', isError);
-            alertMessage.innerText = message;
+            document.getElementById('alert-message').innerText = message;
             alertContainer.style.display = 'block';
             setTimeout(() => {
                 alertContainer.style.display = 'none';
             }, 3000);
         }
 
-        function updateUI() {
-            document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-            document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
-            document.getElementById('crop-prices').innerText = `Crop Prices: ${JSON.stringify(cropPrices)}`;
-        }
-
         document.getElementById('find-job').onclick = findJob;
-        document.getElementById('work').onclick = work;
         document.getElementById('go-pub').onclick = goPub;
-        document.getElementById('plant-crop').onclick = function() {
-            document.getElementById('background-image').src = 'crop.png';
-            cropPlanted = true;
-            setTimeout(() => {
-                document.getElementById('background-image').src = 'home.png';
-                showAlert('Crop planted.');
-            }, 10000);
-        };
-        document.getElementById('harvest-crop').onclick = function() {
-            document.getElementById('background-image').src = 'crop.png';
-            cropPlanted = false;
-            setTimeout(() => {
-                document.getElementById('background-image').src = 'home.png';
-                showAlert('Crop harvested.');
-            }, 10000);
-        };
-        document.getElementById('upgrade-tools').onclick = function() {
-            toolLevel++;
-            showAlert(`Tools upgraded to level ${toolLevel}.`);
-        };
+        document.getElementById('work').onclick = work;
+        document.getElementById('plant-crop').onclick = plantCrop;
+        document.getElementById('harvest-crop').onclick = harvestCrop;
+        document.getElementById('upgrade-tools').onclick = upgradeTools;
         document.getElementById('toggle-music').onclick = toggleMusic;
         document.getElementById('message-jakes').onclick = messageJakes;
     </script>
