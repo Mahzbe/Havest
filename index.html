@@ -113,6 +113,7 @@
             <button id="harvest-crop">Harvest Crop</button>
             <button id="upgrade-tools">Upgrade Tools</button>
             <button id="toggle-music">Play Music</button> <!-- Added Play/Pause button -->
+            <button id="message-jakes">Message Jakes</button> <!-- Added Jakes button -->
         </div>
         <div id="info-container">
             <div id="alert-container">
@@ -126,6 +127,7 @@
                 <p id="season">Season: spring</p>
                 <p id="crop-prices"></p>
                 <p id="leaderboard-list"></p>
+                <div id="jakes-messages"></div> <!-- Added Jakes messages display -->
             </div>
             <div class="timer-container" id="crop-timer"></div>
         </div>
@@ -150,6 +152,7 @@
         let cropPlanted = false;
         let musicTrack = 1;
         let isPlaying = true;
+        let jakesMessageTimer;
 
         // Play background music
         function playBackgroundMusic() {
@@ -221,148 +224,96 @@
         }
 
         // Jakes interaction
-        function jakesInteraction() {
-            let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
-            if (choice.toLowerCase() === 'yes') {
-                goPub(); // Take the player to the pub
-                setTimeout(function() {
-                    showAlert("Jakes got drunk! You need to take him home.");
-                    goHome(); // Take Jakes home
-                }, 5000); // Wait for 5 seconds before Jakes gets drunk
-            } else {
-                showAlert("You declined Jakes' offer.");
-            }
+        function messageJakes() {
+            const messageSpace = document.getElementById('jakes-messages');
+            messageSpace.innerHTML = `
+                <p>Jakes: "Hey, want to grab a drink at the pub?"</p>
+                <p>Jakes: "How are you doing? Everything okay?"</p>
+                <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
+                <p>Jakes: "Just checking in. How’s the farm work going?"</p>
+            `;
+            showAlert("Jakes has messaged you. Check the message space!");
         }
 
-        // Go home
-        function goHome() {
-            document.getElementById('background-image').src = 'home.png'; // Return to home background
-            showAlert("You took Jakes home.");
+        // Get a random message from Jakes
+        function getRandomJakesMessage() {
+            const jakesMessages = [
+                "Hey! Want to grab a drink at the pub?",
+                "How are you doing? Everything okay?",
+                "I need to borrow some money. Can you help me out?",
+                "Just checking in. How’s the farm work going?"
+            ];
+            const randomMessage = jakesMessages[Math.floor(Math.random() * jakesMessages.length)];
+            document.getElementById('jakes-messages').innerText = `Jakes: ${randomMessage}`;
+            showAlert("Jakes has sent you a new message!");
+        }
+
+        // Show an alert message
+        function showAlert(message, isError = false) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertMessage = document.getElementById('alert-message');
+            alertMessage.innerText = message;
+            alertContainer.className = isError ? 'error' : '';
+            alertContainer.style.display = 'block';
+            setTimeout(() => alertContainer.style.display = 'none', 3000); // Hide after 3 seconds
         }
 
         // Plant crop
         function plantCrop() {
-            document.getElementById('background-image').src = 'crop.png'; // Show crop background
-            showAlert("You planted a crop!");
-            document.getElementById('crop-timer').classList.add('active'); // Start crop timer
             cropPlanted = true;
-            setTimeout(function() {
-                document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
-                document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
-            }, 10000); // 10 seconds
+            document.getElementById('crop-timer').classList.add('active');
+            showAlert("Crop has been planted!");
         }
 
         // Harvest crop
         function harvestCrop() {
             if (cropPlanted) {
-                showAlert("You harvested the crop!");
+                const payment = getCropPayment();
+                bankBalance += payment;
                 cropPlanted = false;
+                document.getElementById('crop-timer').classList.remove('active');
+                showAlert(`Crop harvested! You've earned $${payment}.`);
+                updateUI();
             } else {
-                showAlert("You don't have any crops to harvest!", true); // Show error alert
+                showAlert("No crop to harvest!", true); // Show error alert
             }
+        }
+
+        // Get payment for crop
+        function getCropPayment() {
+            return 50; // Fixed payment value, modify as needed
         }
 
         // Upgrade tools
         function upgradeTools() {
-            if (bankBalance >= 100) {
-                showAlert("You upgraded your tools!");
-                toolLevel++;
-                bankBalance -= 100; // Deduct 100 from bank balance
-                document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
-                // Increase crop prices by $30 for each tool level upgrade
-                for (let crop in cropPrices) {
-                    cropPrices[crop] += 30;
-                }
-                updateMarketPrices(); // Update crop prices display
-            } else {
-                showAlert("Not enough money to upgrade tools!", true); // Show error alert
-            }
+            toolLevel++;
+            showAlert(`Tools upgraded to level ${toolLevel}!`);
+            updateUI();
         }
 
-        // Show alert
-        function showAlert(message, isError = false) {
-            const alertContainer = document.getElementById('alert-container');
-            const alertMessage = document.getElementById('alert-message');
-            alertMessage.innerText = message;
-            alertContainer.style.display = 'block';
-            if (isError) {
-                alertContainer.classList.add('error');
-            } else {
-                alertContainer.classList.remove('error');
-            }
-            setTimeout(() => {
-                alertContainer.style.display = 'none';
-            }, 3000);
-        }
-
-        // Update weather and season display
-        function updateWeatherSeason() {
-            document.getElementById('weather').innerText = `Weather: ${weather}`;
-            document.getElementById('season').innerText = `Season: ${season}`;
-        }
-
-        // Update market prices display
-        function updateMarketPrices() {
-            let cropPricesList = '';
-            for (let crop in cropPrices) {
-                cropPricesList += `${crop}: $${cropPrices[crop]} `;
-            }
-            document.getElementById('crop-prices').innerText = cropPricesList;
-        }
-
-        // Update leaderboard display
-        function updateLeaderboard() {
-            let leaderboardList = '';
-            for (let i = 0; i < leaderboard.length; i++) {
-                leaderboardList += `${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].score} `;
-            }
-            document.getElementById('leaderboard-list').innerText = leaderboardList;
-        }
-
-        // Initialize game
-        function initGame() {
-            updateWeatherSeason();
-            updateMarketPrices();
-            updateLeaderboard();
-            findJob(); // Call findJob function to start the game
-            playBackgroundMusic(); // Play background music
-        }
-
-        initGame();
-
-        // Set interval to prompt player to go to work every 10 minutes
-        setInterval(function() {
-            if (job) {
-                showAlert(`Time to go to work as a ${job}!`);
-                // Stop any current activity (e.g., drinking at the pub)
-                goHome();
-                // Simulate work button click
-                document.getElementById('work').click();
-                // Pay player after work
-                payPlayer();
-            } else {
-                showAlert("You need to find a job first!", true); // Show error alert
-            }
-        }, 600000); // 10 minutes in milliseconds
-
-        // Pay player after work
-        function payPlayer() {
-            bankBalance += 100; // Pay player $100
+        // Update UI
+        function updateUI() {
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-            showAlert("You got paid $100 for your work!");
+            document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
+            document.getElementById('crop-prices').innerText = `Crop Prices: ${JSON.stringify(cropPrices)}`;
+            document.getElementById('leaderboard-list').innerText = `Leaderboard: ${leaderboard.join(', ')}`;
         }
 
-        // Add event listeners to buttons
+        // Add event listeners
         document.getElementById('find-job').addEventListener('click', findJob);
         document.getElementById('work').addEventListener('click', work);
         document.getElementById('go-pub').addEventListener('click', goPub);
         document.getElementById('plant-crop').addEventListener('click', plantCrop);
         document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
         document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
-        
-        // Add event listener to switch music
         document.getElementById('toggle-music').addEventListener('click', toggleMusic);
+        document.getElementById('message-jakes').addEventListener('click', messageJakes);
+
+        // Start background music
+        playBackgroundMusic();
+
+        // Periodic Jakes messages
+        jakesMessageTimer = setInterval(getRandomJakesMessage, 60000); // Message every minute
     </script>
 </body>
 </html>
