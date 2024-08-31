@@ -5,131 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest Haven</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            overflow: hidden; /* Prevent scrollbars from appearing */
-        }
-
-        #game-area {
-            display: flex;
-            max-width: 1200px;
-            width: 100%;
-            height: 80%;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        #buttons-container {
-            display: flex;
-            flex-direction: column;
-            width: 200px;
-            padding: 20px;
-            box-sizing: border-box;
-            border-right: 1px solid #ccc;
-            background-color: #f9f9f9;
-            position: relative;
-        }
-
-        #buttons-container button {
-            margin: 10px 0;
-        }
-
-        #info-container {
-            flex: 1;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        #info-container img {
-            width: 100%;
-            height: auto;
-            max-height: 100%;
-            object-fit: cover;
-        }
-
-        #info-container .ui {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        #info-container .ui p {
-            margin: 5px 0;
-        }
-
-        #alert-container {
-            display: none;
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-        }
-
-        #alert-container.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .crop {
-            display: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        @media (max-width: 600px) {
-            #buttons-container {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #ccc;
-            }
-
-            #game-area {
-                flex-direction: column;
-            }
-
-            .ui {
-                text-align: center;
-            }
-
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-        }
+        /* Your existing CSS */
     </style>
 </head>
 <body>
@@ -232,14 +108,17 @@
 
         // Go home
         function goHome() {
-            document.getElementById('background-image').src = 'home.png'; // Change background image
+            document.getElementById('background-image').src = 'home.png'; // Return to home background
             showAlert("You took Jakes home.");
         }
 
         // Plant crop
         function plantCrop() {
+            document.getElementById('background-image').src = 'crop.png'; // Show crop background
             showAlert("You planted a crop!");
-            document.querySelector('.crop').style.display = 'block';
+            setTimeout(function() {
+                document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
+            }, 10000); // 10 seconds
         }
 
         // Harvest crop
@@ -247,8 +126,12 @@
             if (document.querySelector('.crop').style.display === 'block') {
                 showAlert("Your crop has been harvested!");
                 document.querySelector('.crop').style.display = 'none';
-                bankBalance += 200 + (toolLevel - 1) * 30; // Increase earnings based on tool level
+                bankBalance += (200 + (toolLevel - 1) * 30); // Increase earning based on tool level
                 document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
+                document.getElementById('background-image').src = 'crop.png'; // Show crop background
+                setTimeout(function() {
+                    document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 minutes
+                }, 600000); // 10 minutes
             } else {
                 showAlert("You don't have any crops to harvest!", true); // Show error alert
             }
@@ -256,30 +139,37 @@
 
         // Upgrade tools
         function upgradeTools() {
-            if (bankBalance >= 100) { // Check if there's enough money to upgrade
+            if (bankBalance >= 100) {
                 showAlert("You upgraded your tools!");
                 toolLevel++;
                 bankBalance -= 100; // Deduct 100 from bank balance
+                cropPrices = updateCropPrices();
                 document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
                 document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
-                cropPrices['wheat'] += 30;
-                cropPrices['corn'] += 30;
-                cropPrices['soybeans'] += 30;
-                updateMarketPrices(); // Update crop prices display
+                updateMarketPrices();
             } else {
-                showAlert("You don't have enough money to upgrade your tools.", true); // Show error alert
+                showAlert("Not enough funds to upgrade tools!", true); // Show error alert
             }
         }
 
+        // Update crop prices based on tool level
+        function updateCropPrices() {
+            let newPrices = {};
+            for (let crop in cropPrices) {
+                newPrices[crop] = cropPrices[crop] + (toolLevel - 1) * 30;
+            }
+            return newPrices;
+        }
+
         // Show alert
-        function showAlert(message, isError = false) {
+        function showAlert(message, isError) {
             const alertContainer = document.getElementById('alert-container');
             const alertMessage = document.getElementById('alert-message');
             alertMessage.innerText = message;
-            alertContainer.style.display = 'block'; /* Show the alert container */
-            alertContainer.className = isError ? 'error' : ''; // Add error class if isError is true
+            alertContainer.style.display = 'block'; // Show the alert container
+            alertContainer.className = isError ? 'error' : ''; // Add error class
             setTimeout(() => {
-                alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
+                alertContainer.style.display = 'none'; // Hide the alert container after 3 seconds
             }, 3000);
         }
 
@@ -338,14 +228,6 @@
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
             showAlert("You got paid $100 for your work!");
         }
-
-        // Event listeners for buttons
-        document.getElementById('find-job').addEventListener('click', findJob);
-        document.getElementById('work').addEventListener('click', work);
-        document.getElementById('go-pub').addEventListener('click', jakesInteraction);
-        document.getElementById('plant-crop').addEventListener('click', plantCrop);
-        document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
-        document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
     </script>
 </body>
 </html>
