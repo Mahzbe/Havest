@@ -5,55 +5,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest Haven</title>
     <style>
-        /* Your existing styles */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        #game-area {
+            display: flex;
+            height: 100vh;
+            background-size: cover;
+            position: relative;
+        }
+        #buttons-container {
+            width: 20%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #buttons-container button {
+            width: 80%;
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #buttons-container button:hover {
+            background-color: #555;
+        }
+        #info-container {
+            width: 80%;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        #background-image {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            object-fit: cover;
+        }
         #alert-container {
             display: none;
-            position: fixed;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff;
-            border: 1px solid #ccc;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
             padding: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            font-size: 16px;
         }
-        #alert-yes, #alert-no {
-            margin: 5px;
+        #alert-container.error {
+            color: red;
+        }
+        .ui {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .ui p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .timer-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 8px solid #ddd;
+            border-top: 8px solid #3498db;
+            animation: spin 30s linear infinite;
+            display: none;
+        }
+        .timer-container.active {
+            display: block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div id="game-area">
-        <!-- Your existing game-area content -->
+        <div id="buttons-container">
+            <button id="find-job">Find a Job</button>
+            <button id="work">Work</button>
+            <button id="go-pub">Go to Pub</button>
+            <button id="plant-crop">Plant Crop</button>
+            <button id="harvest-crop">Harvest Crop</button>
+            <button id="upgrade-tools">Upgrade Tools</button>
+            <button id="toggle-music">Play Music</button>
+            <button id="message-jakes">Message Jakes</button>
+        </div>
+        <div id="info-container">
+            <div id="alert-container">
+                <p id="alert-message"></p>
+            </div>
+            <img id="background-image" src="home.png" alt="Background">
+            <div class="ui">
+                <p id="bank-balance">Bank Balance: $500</p>
+                <p id="tool-level">Tool Level: 1</p>
+                <p id="weather">Weather: sunny</p>
+                <p id="season">Season: spring</p>
+                <p id="crop-prices"></p>
+                <p id="leaderboard-list"></p>
+                <div id="jakes-messages"></div>
+            </div>
+            <div class="timer-container" id="crop-timer"></div>
+        </div>
     </div>
 
     <audio id="background-music" src="background-music1.mp3" loop></audio>
     <audio id="moow-sound" src="moow.mp3"></audio>
 
-    <div id="alert-container">
-        <p id="alert-message"></p>
-        <button id="alert-yes">Yes</button>
-        <button id="alert-no">No</button>
-    </div>
-
     <script>
-        // Your existing variables
-        let bankBalance = 100; // Example balance
+        // Game variables
         let job = null;
-        let cropPlanted = false;
+        let bankBalance = 500;
         let toolLevel = 1;
+        let cropPrices = {
+            "wheat": 10,
+            "corn": 15,
+            "soybeans": 20
+        };
+        let weather = "sunny";
+        let season = "spring";
+        let leaderboard = [];
+        let cropPlanted = false;
         let musicTrack = 1;
         let isPlaying = true;
-        let weather = 'Sunny'; // Example weather
-        let season = 'Spring'; // Example season
-        let cropPrices = {
-            'Wheat': 50,
-            'Corn': 40
-        };
-        let leaderboard = [
-            { name: 'Player1', score: 1000 },
-            { name: 'Player2', score: 800 }
-        ];
+        let jakesMessageTimer;
 
         // Play background music
         function playBackgroundMusic() {
@@ -124,160 +223,87 @@
             }
         }
 
-        // Jakes interaction
-        function jakesInteraction() {
-            const messages = [
-                "Jakes: 'Hey, want to grab a drink at the pub?'",
-                "Jakes: 'How are you doing today?'",
-                "Jakes: 'Can I borrow $50?'"
-            ];
-            let messageIndex = 0;
-
-            function showNextMessage() {
-                if (messageIndex < messages.length) {
-                    showAlert(messages[messageIndex], false, function(response) {
-                        if (messageIndex === 0 && response === 'yes') {
-                            goPub(); // Take the player to the pub
-                        } else if (messageIndex === 2 && response === 'yes') {
-                            if (bankBalance >= 50) {
-                                bankBalance -= 50; // Deduct $50
-                                document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                                showAlert("You lent $50 to Jakes.");
-                            } else {
-                                showAlert("Not enough money to lend to Jakes!", true); // Show error alert
-                            }
-                        } 
-                        messageIndex++;
-                        showNextMessage(); // Show the next message
-                    });
-                }
-            }
-
-            showNextMessage(); // Start showing messages
-        }
-
-        // Plant crop
-        function plantCrop() {
-            document.getElementById('background-image').src = 'crop.png'; // Show crop background
-            showAlert("You planted a crop!");
-            document.getElementById('crop-timer').classList.add('active'); // Start crop timer
-            cropPlanted = true;
-            setTimeout(function() {
-                document.getElementById('background-image').src = 'home.png'; // Revert to home background after 10 seconds
-                document.getElementById('crop-timer').classList.remove('active'); // Stop crop timer
-            }, 10000); // 10 seconds
-        }
-
-        // Harvest crop
-        function harvestCrop() {
-            if (cropPlanted) {
-                bankBalance += 50; // Pay player $50 for harvesting
-                document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                showAlert("You harvested the crop and earned $50!");
-                cropPlanted = false;
-            } else {
-                showAlert("You don't have any crops to harvest!", true); // Show error alert
-            }
-        }
-
-        // Upgrade tools
-        function upgradeTools() {
-            if (bankBalance >= 100) {
-                showAlert("You upgraded your tools!");
-                toolLevel++;
-                bankBalance -= 100; // Deduct 100 from bank balance
-                document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-                document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
-                // Increase crop prices by $30 for each tool level upgrade
-                for (let crop in cropPrices) {
-                    cropPrices[crop] += 30;
-                }
-                updateMarketPrices(); // Update crop prices display
-            } else {
-                showAlert("Not enough money to upgrade tools!", true); // Show error alert
-            }
-        }
-
-        // Show alert
-        function showAlert(message, isError = false, callback = null) {
+        // Show an alert message with action buttons
+        function showAlert(message, callback, isError = false) {
             const alertContainer = document.getElementById('alert-container');
             const alertMessage = document.getElementById('alert-message');
-            const alertYes = document.getElementById('alert-yes');
-            const alertNo = document.getElementById('alert-no');
             alertMessage.innerText = message;
-            alertYes.style.display = 'none';
-            alertNo.style.display = 'none';
+            alertContainer.className = isError ? 'error' : '';
             alertContainer.style.display = 'block';
 
-            if (callback) {
-                alertYes.style.display = 'inline';
-                alertNo.style.display = 'inline';
+            // Clear any previous event listeners
+            document.getElementById('alert-yes')?.remove();
+            document.getElementById('alert-no')?.remove();
 
-                alertYes.onclick = function() {
-                    alertContainer.style.display = 'none';
-                    callback('yes');
-                };
+            // Create buttons for response
+            const yesButton = document.createElement('button');
+            yesButton.id = 'alert-yes';
+            yesButton.innerText = 'Yes';
+            yesButton.onclick = () => {
+                alertContainer.style.display = 'none';
+                callback('yes');
+            };
 
-                alertNo.onclick = function() {
-                    alertContainer.style.display = 'none';
-                    callback('no');
-                };
-            } else {
-                setTimeout(() => {
-                    alertContainer.style.display = 'none';
-                }, 3000);
+            const noButton = document.createElement('button');
+            noButton.id = 'alert-no';
+            noButton.innerText = 'No';
+            noButton.onclick = () => {
+                alertContainer.style.display = 'none';
+                callback('no');
+            };
+
+            alertContainer.appendChild(yesButton);
+            alertContainer.appendChild(noButton);
+        }
+
+        // Jakes interaction
+        function handleJakesInteraction() {
+            const messages = [
+                {
+                    text: "Jakes: 'Hey, want to grab a drink at the pub?'",
+                    action: () => {
+                        document.getElementById('background-image').src = 'pub.png'; // Change background image
+                        showAlert("You're at the pub!", () => {});
+                    }
+                },
+                {
+                    text: "Jakes: 'I need to borrow $50.'",
+                    action: () => {
+                        if (bankBalance >= 50) {
+                            bankBalance -= 50;
+                            document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
+                            showAlert("You lent $50 to Jakes.", () => {});
+                        } else {
+                            showAlert("Not enough money to lend to Jakes!", () => {});
+                        }
+                    }
+                }
+            ];
+
+            // Randomly select a message
+            function getRandomMessage() {
+                return messages[Math.floor(Math.random() * messages.length)];
             }
-        }
 
-        // Update weather and season display
-        function updateWeatherSeason() {
-            document.getElementById('weather').innerText = `Weather: ${weather}`;
-            document.getElementById('season').innerText = `Season: ${season}`;
-        }
-
-        // Update market prices display
-        function updateMarketPrices() {
-            let cropPricesList = '';
-            for (let crop in cropPrices) {
-                cropPricesList += `${crop}: $${cropPrices[crop]} `;
+            // Show the selected message and handle the response
+            function showMessage() {
+                const { text, action } = getRandomMessage();
+                showAlert(text, (response) => {
+                    if (response === 'yes') {
+                        action();
+                    }
+                });
             }
-            document.getElementById('crop-prices').innerText = cropPricesList;
+
+            showMessage(); // Trigger the message interaction
         }
 
-        // Update leaderboard display
-        function updateLeaderboard() {
-            let leaderboardList = '';
-            for (let i = 0; i < leaderboard.length; i++) {
-                leaderboardList += `${i + 1}. ${leaderboard[i].name} - ${leaderboard[i].score} `;
-            }
-            document.getElementById('leaderboard-list').innerText = leaderboardList;
-        }
-
-        // Initialize game
-        function initGame() {
-            updateWeatherSeason();
-            updateMarketPrices();
-            updateLeaderboard();
-            findJob(); // Call findJob function to start the game
-            playBackgroundMusic(); // Play background music
-        }
-
-        initGame();
-
-        // Set interval to prompt player to go to work every 10 minutes
-        setInterval(function() {
-            if (job) {
-                showAlert(`Time to go to work as a ${job}!`);
-                // Stop any current activity (e.g., drinking at the pub)
-                goHome();
-                // Simulate work button click
-                document.getElementById('work').click();
-                // Pay player after work
-                payPlayer();
-            } else {
-                showAlert("You need to find a job first!", true); // Show error alert
-            }
-        }, 600000); // Every 10 minutes
+        // Update event listeners
+        document.getElementById('toggle-music').addEventListener('click', toggleMusic);
+        document.getElementById('find-job').addEventListener('click', findJob);
+        document.getElementById('go-pub').addEventListener('click', goPub);
+        document.getElementById('work').addEventListener('click', work);
+        document.getElementById('message-jakes').addEventListener('click', handleJakesInteraction);
     </script>
 </body>
 </html>
