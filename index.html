@@ -6,6 +6,31 @@
     <title>Harvest Haven</title>
     <style>
         /* Add your styles here */
+        /* Responsive design */
+        @media only screen and (max-width: 600px) {
+            /* Small screens (smartphones) */
+            #game-area {
+                width: 100%;
+                height: 100vh;
+                font-size: 12px;
+            }
+        }
+        @media only screen and (min-width: 601px) and (max-width: 1024px) {
+            /* Medium screens (tablets) */
+            #game-area {
+                width: 80%;
+                height: 80vh;
+                font-size: 16px;
+            }
+        }
+        @media only screen and (min-width: 1025px) {
+            /* Large screens (desktops, iPads) */
+            #game-area {
+                width: 60%;
+                height: 60vh;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -42,16 +67,7 @@
         let weather = "Sunny";
         let season = "Spring";
         let leaderboard = [];
-
-        // Add event listeners to buttons
-        document.getElementById('find-job').addEventListener('click', findJob);
-        document.getElementById('work').addEventListener('click', work);
-        document.getElementById('plant-crop').addEventListener('click', plantCrop);
-        document.getElementById('harvest-crop').addEventListener('click', harvestCrop);
-        document.getElementById('upgrade-tools').addEventListener('click', upgradeTools);
-        document.getElementById('go-pub').addEventListener('click', goPub);
-
-        // Functions (updated and refined)
+        // Find a job function
         function findJob() {
             job = getJob();
             showAlert(`You've been hired as a ${job}!`);
@@ -60,27 +76,22 @@
                 document.getElementById('find-job').style.display = 'block';
             }, 300000); // Show the find job button again after 5 minutes
         }
-
+        // Get a random farm-based job function
         function getJob() {
             let jobs = ["Farmer", "Rancher", "Agricultural Specialist", "Farmhand", "Harvest Manager"];
             return jobs[Math.floor(Math.random() * jobs.length)];
         }
-
+        // Go to pub function
         function goPub() {
             showAlert("You're at the pub!");
-            setTimeout(function() {
-                showAlert("Jakes got drunk! You need to take him home.");
-                goHome();
-            }, 5000); // Wait for 5 seconds before Jakes gets drunk
         }
-
+        // Work function
         function work() {
             if (job) {
                 showAlert(`You're working as a ${job}!`);
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
                     job = null;
-                    payPlayer();
                 }, 300000); // Job lasts 5 minutes
                 // Automatic harvesting after 3 minutes
                 setTimeout(function() {
@@ -92,56 +103,63 @@
                 showAlert("You need to find a job first!");
             }
         }
-
+        // Jakes interaction function
+        function jakesInteraction() {
+            let choice = prompt("Jakes: 'Hey, want to grab a drink at the pub?' Do you want to go with him? (yes/no)");
+            if (choice.toLowerCase() === 'yes') {
+                goPub(); // Take the player to the pub
+                setTimeout(function() {
+                    showAlert("Jakes got drunk! You need to take him home.");
+                    goHome(); // Take Jakes home
+                }, 5000); // Wait for 5 seconds before Jakes gets drunk
+      } else {
+                showAlert("You declined Jakes' offer.");
+            }
+        }
+        // Go home function
+        function goHome() {
+            showAlert("You took Jakes home.");
+        }
+        // Plant crop function
         function plantCrop() {
             showAlert("You planted a crop!");
             document.querySelector('.crop').style.display = 'block';
         }
-
+        // Harvest crop function
         function harvestCrop() {
             if (document.querySelector('.crop').style.display === 'block') {
                 showAlert("Your crop has been harvested!");
                 document.querySelector('.crop').style.display = 'none';
                 bankBalance += 200;
-                document.querySelector('.ui p:nth-child(1)').innerText = `Bank Balance: $${bankBalance}`;
+                document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
             } else {
                 showAlert("You don't have any crops to harvest!");
             }
         }
-
+        // Upgrade tools function
         function upgradeTools() {
             showAlert("You upgraded your tools!");
             toolLevel++;
             bankBalance -= 100; // Deduct 100 from bank balance
-            document.querySelector('.ui p:nth-child(1)').innerText = `Bank Balance: $${bankBalance}`;
-            document.querySelector('.ui p:nth-child(2)').innerText = `Tool Level: ${toolLevel}`;
+            document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+            document.querySelector('.ui p:nth-child(4)').innerText = `Tool Level: ${toolLevel}`;
         }
-
-        function goHome() {
-            showAlert("You took Jakes home.");
-        }
-
-        function payPlayer() {
-            bankBalance += 100; // Pay player $100
-            document.querySelector('.ui p:nth-child(1)').innerText = `Bank Balance: $${bankBalance}`;
-            showAlert("You got paid $100 for your work!");
-        }
-
+        // Show alert function
         function showAlert(message) {
             const alertContainer = document.getElementById('alert-container');
             const alertMessage = document.getElementById('alert-message');
             alertMessage.innerText = message;
-            alertContainer.style.display = 'block';
+            alertContainer.style.display = 'block'; /* Show the alert container */
             setTimeout(() => {
-                alertContainer.style.display = 'none';
-            }, 3000); // Hide the alert container after 3 seconds
+                alertContainer.style.display = 'none'; /* Hide the alert container after 3 seconds */
+            }, 3000);
         }
-
+        // Update weather and season display function
         function updateWeatherSeason() {
             document.getElementById('weather').innerText = `Weather: ${weather}`;
             document.getElementById('season').innerText = `Season: ${season}`;
         }
-
+        // Update market prices display function
         function updateMarketPrices() {
             let cropPricesList = '';
             for (let crop in cropPrices) {
@@ -149,7 +167,7 @@
             }
             document.getElementById('crop-prices').innerText = cropPricesList;
         }
-
+        // Update leaderboard display function
         function updateLeaderboard() {
             let leaderboardList = '';
             for (let i = 0; i < leaderboard.length; i++) {
@@ -157,17 +175,14 @@
             }
             document.getElementById('leaderboard-list').innerText = leaderboardList;
         }
-
-        // Initialize game
+        // Initialize game function
         function initGame() {
             updateWeatherSeason();
             updateMarketPrices();
             updateLeaderboard();
             findJob(); // Call findJob function to start the game
         }
-
         initGame();
-
         // Set interval to prompt player to go to work every 10 minutes
         setInterval(function() {
             if (job) {
@@ -182,6 +197,12 @@
                 showAlert("You need to find a job first!");
             }
         }, 600000); // 10 minutes in milliseconds
+        // Pay player after work function
+        function payPlayer() {
+            bankBalance += 100; // Pay player $100
+            document.querySelector('.ui p:nth-child(3)').innerText = `Bank Balance: $${bankBalance}`;
+            showAlert("You got paid $100 for your work!");
+        }
     </script>
 </body>
 </html>
