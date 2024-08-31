@@ -170,6 +170,7 @@
         let musicTrack = 1;
         let isPlaying = true;
         let jakesMessageTimer;
+        let paymentInterval; // Variable to store the interval ID for payments
 
         function playBackgroundMusic() {
             const music = document.getElementById('background-music');
@@ -223,17 +224,21 @@
             if (job) {
                 document.getElementById('moow-sound').play();
                 showAlert(`You're working as a ${job}!`);
+                // Start daily payments
+                if (!paymentInterval) { // Only start the interval if it's not already running
+                    paymentInterval = setInterval(function() {
+                        bankBalance += 50;
+                        showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
+                        updateUI();
+                    }, 60000); // 1 minute interval
+                }
                 setTimeout(function() {
                     showAlert(`Your job as a ${job} has ended.`);
                     job = null;
+                    clearInterval(paymentInterval); // Stop payments when job ends
+                    paymentInterval = null; // Reset the interval variable
                     document.getElementById('find-job').style.display = 'block';
                 }, 300000);
-                // Start daily payments
-                setInterval(function() {
-                    bankBalance += 50;
-                    showAlert(`Daily payment received. Bank Balance: $${bankBalance}`);
-                    updateUI();
-                }, 60000);
             } else {
                 showAlert("You need to find a job first!", true);
             }
@@ -250,87 +255,81 @@
                 <button id="respond-not-ok">Not OK</button>
                 <p>Jakes: "I need to borrow some money. Can you help me out?"</p>
                 <button id="lend-money">Lend $50</button>
-                <button id="deny-money">Don't Lend</button>
-                <p>Jakes: "Check out the farm for any issues."</p>
-                <button id="check-farm">Check Farm</button>
+                <button id="reject-money">Reject</button>
             `;
-            manageJakesActions();
-        }
-
-        function manageJakesActions() {
             document.getElementById('accept-pub').onclick = function() {
                 goPub();
-                document.getElementById('jakes-messages').innerHTML = '';
+                clearJakesMessages();
             };
             document.getElementById('reject-pub').onclick = function() {
-                document.getElementById('jakes-messages').innerHTML = '';
+                showAlert("You declined the pub invitation.");
+                clearJakesMessages();
             };
             document.getElementById('respond-ok').onclick = function() {
-                document.getElementById('jakes-messages').innerHTML = '';
+                showAlert("You responded OK.");
+                clearJakesMessages();
             };
             document.getElementById('respond-not-ok').onclick = function() {
-                document.getElementById('jakes-messages').innerHTML = '';
+                showAlert("You responded Not OK.");
+                clearJakesMessages();
             };
             document.getElementById('lend-money').onclick = function() {
                 bankBalance -= 50;
-                showAlert("You've lent $50 to Jakes. New Bank Balance: $" + bankBalance);
-                document.getElementById('jakes-messages').innerHTML = '';
+                showAlert(`You lent $50 to Jakes. Bank Balance: $${bankBalance}`);
+                clearJakesMessages();
             };
-            document.getElementById('deny-money').onclick = function() {
-                document.getElementById('jakes-messages').innerHTML = '';
-            };
-            document.getElementById('check-farm').onclick = function() {
-                showAlert("Checking farm for issues...");
-                document.getElementById('jakes-messages').innerHTML = '';
+            document.getElementById('reject-money').onclick = function() {
+                showAlert("You rejected Jakes' request for money.");
+                clearJakesMessages();
             };
         }
 
-        function plantCrop() {
-            document.getElementById('background-image').src = 'crop.png';
-            cropPlanted = true;
-            showAlert("Crop planted!");
-            setTimeout(function() {
-                document.getElementById('background-image').src = 'home.png';
-            }, 10000);
+        function clearJakesMessages() {
+            document.getElementById('jakes-messages').innerHTML = '';
         }
 
-        function harvestCrop() {
-            if (cropPlanted) {
-                bankBalance += 100; // Amount added to bank balance on harvest
-                cropPlanted = false;
-                showAlert(`Crop harvested! Bank Balance: $${bankBalance}`);
-                updateUI();
-            } else {
-                showAlert("No crop to harvest!", true);
-            }
+        function showAlert(message, isError) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertMessage = document.getElementById('alert-message');
+            alertContainer.classList.toggle('error', isError);
+            alertMessage.innerText = message;
+            alertContainer.style.display = 'block';
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 3000);
         }
 
         function updateUI() {
             document.getElementById('bank-balance').innerText = `Bank Balance: $${bankBalance}`;
-        }
-
-        function showAlert(message, isError = false) {
-            const alertContainer = document.getElementById('alert-container');
-            const alertMessage = document.getElementById('alert-message');
-            alertMessage.innerText = message;
-            alertContainer.className = isError ? 'error' : '';
-            alertContainer.style.display = 'block';
-            setTimeout(function() {
-                alertContainer.style.display = 'none';
-            }, 3000);
+            document.getElementById('tool-level').innerText = `Tool Level: ${toolLevel}`;
+            document.getElementById('crop-prices').innerText = `Crop Prices: ${JSON.stringify(cropPrices)}`;
         }
 
         document.getElementById('find-job').onclick = findJob;
         document.getElementById('work').onclick = work;
         document.getElementById('go-pub').onclick = goPub;
-        document.getElementById('plant-crop').onclick = plantCrop;
-        document.getElementById('harvest-crop').onclick = harvestCrop;
+        document.getElementById('plant-crop').onclick = function() {
+            document.getElementById('background-image').src = 'crop.png';
+            cropPlanted = true;
+            setTimeout(() => {
+                document.getElementById('background-image').src = 'home.png';
+                showAlert('Crop planted.');
+            }, 10000);
+        };
+        document.getElementById('harvest-crop').onclick = function() {
+            document.getElementById('background-image').src = 'crop.png';
+            cropPlanted = false;
+            setTimeout(() => {
+                document.getElementById('background-image').src = 'home.png';
+                showAlert('Crop harvested.');
+            }, 10000);
+        };
+        document.getElementById('upgrade-tools').onclick = function() {
+            toolLevel++;
+            showAlert(`Tools upgraded to level ${toolLevel}.`);
+        };
         document.getElementById('toggle-music').onclick = toggleMusic;
         document.getElementById('message-jakes').onclick = messageJakes;
-
-        // Initialize game
-        playBackgroundMusic();
-        updateUI();
     </script>
 </body>
 </html>
